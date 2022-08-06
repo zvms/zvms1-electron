@@ -27,7 +27,7 @@
     </v-card-text>
     <v-dialog v-model="dialog" max-width="80%">
       <v-card>
-        <volinfo :volid="volid" />
+        <volcert :volid="volid" :stuid="stuid" :stuname="stuname"/>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="red darken-1" text @click="dialog = false">关闭</v-btn>
@@ -39,20 +39,22 @@
 
 <script>
 import dialogs from "../utils/dialogs";
-import volinfo from "./volinfo.vue";
+import volcert from "./volcert.vue";
 import axios from "axios";
 
 export default {
   name: "stuvolist",
   props: ["userid", "title"],
   components: {
-    volinfo,
+    volcert
   },
   data: () => ({
     volworks: undefined,
     dialog: false,
     search: "",
     volid: undefined,
+    stuid: undefined,
+    stuname: undefined,
     headers: [
       { text: "义工ID", value: "volId", align: "start", sortable: true },
       { text: "义工名称", value: "name" },
@@ -79,6 +81,7 @@ export default {
     },
     init: function () {
       this.volworks = undefined;
+      this.stuid = this.userid;
       if (this.userid != 0 && this.userid != undefined) {
         this.$store.commit("loading", true);
         axios
@@ -104,8 +107,10 @@ export default {
       }
     },
     rowClick: function (item) {
-      this.dialog = true;
       this.volid = item.volId;
+      this.stuid = this.userid;
+      this.stuname = this.title;
+      this.dialog = true;
     },
   },
   watch: {

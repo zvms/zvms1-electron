@@ -1,6 +1,6 @@
 export default {
-    secretary: 1,
-    teacher: 2,
-    admin: 3,
-    system: 4
+    secretary: 0,
+    teacher: 1,
+    admin: 2,
+    system: 3
 }

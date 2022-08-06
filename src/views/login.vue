@@ -53,7 +53,7 @@ import storeSaver from "../utils/storeSaver.js";
 
 let { ipcRenderer } = window.require('electron')
 
-var md5=require('md5-node');
+// var md5=require('md5-node');
 var current_version = "cb6a4549b3e44a70ee46319a049eb2b5";
 // 版本号的加盐的MD5，记得改
 
@@ -87,7 +87,7 @@ export default {
           })
           .then((response) => {
             //对传回数据进行处理
-            console.log(response.data)
+            // console.log(response.data)
             if (response.data.type == "SUCCESS") {
                 ipcRenderer.send('endflash');
               dialogs.toasts.success(response.data.message);

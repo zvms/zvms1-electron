@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, ipcMain } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, dialog } from 'electron'
 import {
     createProtocol,
     /* installVueDevtools */
@@ -46,7 +46,8 @@ function createWindow() {
         skipTaskbar: false,
         webPreferences: {
             nodeIntegration: true,
-            webSecurity: false
+            webSecurity: false,
+            preload: __dirname + '/preload.js'
         }
     })
 
@@ -105,6 +106,7 @@ function createWindow() {
         win.isVisible() ? win.setSkipTaskbar(false) : win.setSkipTaskbar(true)
     })
     let timericon;
+
     ipcMain.on('flash', () => {
         if (timericon) return;
         win.flashFrame(true);
@@ -112,25 +114,57 @@ function createWindow() {
         timericon = setInterval(() => {
             tray.setImage(path.join(__static,type ? 'logo.ico' : 'empty.ico'));
             type ^= 1;
-        },
-            500
-        );
+        }, 500);
     })
+
     ipcMain.on('endflash', () => {
         if (!timericon) return;
         clearInterval(timericon);
         timericon = undefined;
         tray.setImage(path.join(__static,'logo.ico'));
     })
+
     ipcMain.on('file-read-req', (event, arg) => {
         fs.readFile(arg, 'utf-8', (err, data) => {
             event.sender.send('file-read-complete', {"err": err, "data": data})
         })
     })
+
     ipcMain.on('file-write-req', (event, arg) => {
         fs.writeFile(arg.path, arg.data, (err) => {
             event.sender.send('file-write-complete', {"err": err})
         })
+    })
+
+    let opening = false;
+    ipcMain.on('open-picture', async (event) => {
+        if (opening) {
+            return;
+        }
+        opening = true;
+
+        let o = await dialog.showOpenDialog({
+            title: "请选择图片：",
+            buttonLabel: "确定",
+            defaultPath: app.getPath('pictures'),
+            properties: ["singleSelection"],
+            filters : [
+                { name: "图片", extensions: ["jpg", "jpeg", "png", "bmp"] }
+            ]
+        });
+
+        opening = false;
+
+        if (!o.canceled) {
+            fs.readFile(o.filePaths[0], (err, data) => {
+                if (err) console.error(err);
+                else {
+                    event.sender.send("open-picture-recv", data.toString("base64"));
+                }
+            });
+        } else {
+            event.sender.send("open-picture-recv", null);
+        }
     })
 }
 
