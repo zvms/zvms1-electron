@@ -67,6 +67,14 @@
               <td>感想</td>
               <td>{{thought}}</td>
             </tr>
+            <tr v-if="pictures">
+              <td>图片</td>
+              <td>
+                <ul v-for="img in pictures" :key="img.id">
+                  <li><img :src="'data:image/png;base64,' + img.src" class="pic"></li>
+                </ul>
+              </td>
+            </tr>
             <tr>
               <td>发放的校内时长（分钟）</td>
               <td><v-text-field
@@ -151,7 +159,9 @@ export default {
     volTL: undefined,
     inside: undefined,
     outside: undefined,
-    large: undefined
+    large: undefined,
+
+    pictures: []
   }),
   mounted: function () {
     this.pageload();
@@ -200,6 +210,9 @@ export default {
       this.volid = item.volId;
       this.stuid = item.stuId;
       this.thought = item.thought;
+      this.pictures = item.picture;
+
+      console.log(this.pictures)
       
       this.$store.commit("loading", true);
       axios
@@ -289,4 +302,10 @@ export default {
 .v-card {
   margin: 0.3rem;
 }
+
+.pic {
+  width: auto;
+  height: 120px;
+}
+
 </style>

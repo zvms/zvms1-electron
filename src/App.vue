@@ -107,22 +107,26 @@
     </v-footer>
   </v-app>
 </template>
+
 <style>
 ::-webkit-scrollbar {
   width: 0px;
   height: 4px;
 }
+
 ::-webkit-scrollbar-button {
   width: 0px;
   height: 0;
 }
+
 #drag {
   padding: 0;
   margin: 0;
 }
 </style>
+
 <script>
-import zutils from "./utils/zutils.js"
+import zutils from "./utils/zutils.js";
 import dialogs from "./utils/dialogs.js";
 import permissions from "./utils/permissions.js";
 import storeSaver from "./utils/storeSaver.js";
@@ -130,31 +134,33 @@ import storeSaver from "./utils/storeSaver.js";
 let { ipcRenderer } = window.require('electron')
 export default {
   name: "App",
+
   data: () => ({
     activeBtn: 1,
     drawer: true,
     phone: false,
     currentVol: undefined
   }),
+
   mounted: async function () {
-    // storeSaver.loadState(this);
-    // this.$router.push("/me");
-    // await zutils.checkToken(this);
     await zutils.fetchAllVolunter((volworks) => { this.vol = volworks; });
     setInterval(this.listen, 60000, this);
-    // console.log("mounted");
   },
+
   methods: {
     granted: function () {
       return this.$store.state.info.permission < permissions.teacher;
     },
+
     changeColorTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
     },
+
     fetchVol: function () {
        if (this.granted()) this.fetchCurrentClassVol();
        else this.fetchAllVol();
     },
+
     async fetchCurrentClassVol() {
       this.$store.commit("loading", true);
       await zutils.fetchClassVolunter(
@@ -167,6 +173,7 @@ export default {
       );
       this.$store.commit("loading", false);
     },
+
     async fetchAllVol() {
       this.$store.commit("loading", true);
       await zutils.fetchAllVolunter((volworks) => {
@@ -176,23 +183,23 @@ export default {
       });
       this.$store.commit("loading", false);
     },
+
     async listen(t) {
-      console.log("listen");
       if (!t.$store.state.isLogined){
         console.log(t.$store.state);
         console.error("!login");
         ipcRenderer.send('flash');
         return;
       }
+
       storeSaver.saveState(this);
       zutils.checkToken(t);
       t.fetchVol();
       let flag = false;
       let last = t.$store.state.lastSeenVol;
       let vol = t.currentVol;
-      // console.log(last,vol);
+      
       if (last!=null && last!=undefined && vol!=null && vol!=undefined) {
-        // console.log(last,vol);
         if (vol.length != last.length) flag = true;
         else {
           for (var i = 0; i < vol.length; i++)
@@ -202,12 +209,15 @@ export default {
         if (flag) ipcRenderer.send('flash');
       }
     },
+
     minwindow() {
       ipcRenderer.send('minwindow')
     },
+
     maxwindow() {
       ipcRenderer.send('maxwindow')
     },
+
     closewindow() {
       ipcRenderer.send('closewindow')
     },
