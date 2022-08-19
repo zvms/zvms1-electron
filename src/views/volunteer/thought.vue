@@ -65,10 +65,40 @@
             </tr>
             <tr>
               <td>感想</td>
-              <td><v-textarea
-                        v-model="thought"
-                placeholder=""
-                    ></v-textarea></td>
+              <td>
+                <v-textarea
+                  v-model="thought"
+                  placeholder=""
+                ></v-textarea>
+              </td>
+            </tr>
+            <tr>
+              <td>图片</td>
+              <td><button @click="uploadPicture">上传图片</button></td>
+            </tr>
+            <tr v-if="pictures.length != 0">
+              <td>已选择图片</td>
+              <ul v-for="img in pictures" :key="img.id">
+                <td>
+                  <li>
+                    <img :src="'data:image/png;base64,' + img.src" class="pic">
+                  </li>
+                </td>
+                <td>
+                  <v-icon
+                    @click="deletePicture(img.id)"
+                    color="grey"
+                    style="
+                      -webkit-app-region: no-drag;
+                      margin-right: 0;
+                      cursor: pointer;
+                      top: -55px;
+                      left: 30px;
+                    "
+                    >mdi-close</v-icon
+                  >
+                </td>
+              </ul>
             </tr>
           </tbody>
         </v-simple-table>
@@ -93,6 +123,8 @@ import permissions from "../../utils/permissions";
 import axios from "axios";
 import zutils from "../../utils/zutils";
 
+const ipcRenderer = window.ipcRenderer;
+
 export default {
   data: () => ({
     search: "",
@@ -110,11 +142,17 @@ export default {
     volDesc: undefined,
     volTI: undefined,
     volTO: undefined,
-    volTL: undefined
+    volTL: undefined,
+
+    pictures: [],
+    count: 0,
+    opening: false
   }),
+
   mounted: function () {
     this.pageload();
   },
+  
   methods: {
     timeToHint: function (a){
         let hr = parseInt(a / 60);
@@ -127,7 +165,9 @@ export default {
         else
             return mi + "分钟";
     },
+
     async pageload() {
+      // console.log("111122313")
       this.$store.commit("loading", true);
       await zutils.checkToken(this);
       await axios
@@ -135,7 +175,7 @@ export default {
 
         })
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
           if (response.data.type == "SUCCESS") {
             dialogs.toasts.success(response.data.message);
             this.thoughts = response.data.result;
@@ -151,9 +191,11 @@ export default {
         });
       this.$store.commit("loading", false);
     },
+
     granted: function () {
       return this.$store.state.info.permission < permissions.teacher;
     },
+
     rowClick: function (item) {
       this.dialog1 = true;
       this.volid = item.volId;
@@ -166,7 +208,7 @@ export default {
       
         })
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
           if (response.data.type == "SUCCESS") {
             dialogs.toasts.success(response.data.message);
             this.volDate = response.data.date;
@@ -175,6 +217,8 @@ export default {
             this.volTI = response.data.inside;
             this.volTO = response.data.outside;
             this.volTL = response.data.large;
+
+            this.pictures = []
           } else {
             dialogs.toasts.error(response.data.message);
           }
@@ -187,15 +231,20 @@ export default {
         });
       this.$store.commit("loading", false);
     },
+
     submit: function () {
       this.dialog1 = false;
       this.$store.commit("loading", true);
       axios
         .post("/volunteer/thought/"+this.volid,{
-          "thought":[{"stuId": this.stuid, "content": this.thought}]
+          "thought": [{
+            "stuId": this.stuid,
+            "content": this.thought,
+            "pictures": this.pictures.map(o => o.src)
+          }],
         })
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
           if (response.data.type == "SUCCESS") {
             dialogs.toasts.success(response.data.message);
             location.reload();
@@ -210,8 +259,30 @@ export default {
           this.$store.commit("loading", false);
         });
       this.$store.commit("loading", false);
-    }
-  },
+    },
+
+    uploadPicture() {
+      if (!this.opening) {
+        this.opening = true;
+
+        ipcRenderer.once("open-picture-recv", (_, data) => {
+          if (data) {
+            this.pictures.push({
+              id: this.count,
+              src: data
+            });
+            this.count++;
+          }
+          this.opening = false;
+        });
+
+        ipcRenderer.send("open-picture");
+      }
+    },
+
+    deletePicture(id) {
+      this.pictures = this.pictures.filter(img => img.id != id);
+    }}
 };
 </script>
 
@@ -219,4 +290,10 @@ export default {
 .v-card {
   margin: 0.3rem;
 }
+
+.pic {
+  width: auto;
+  height: 120px;
+}
+
 </style>

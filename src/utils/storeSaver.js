@@ -17,7 +17,9 @@ export default {
             "data": JSON.stringify(con.$store.state)
         });
     },
+    
     loadState: async (con, f) => {
+        // console.log("loadState!!!")
         ipcRenderer.once('file-read-complete', (event, arg) => {
             // console.log(arg);
             if (arg.err){
