@@ -123,7 +123,7 @@ import permissions from "../../utils/permissions";
 import axios from "axios";
 import zutils from "../../utils/zutils";
 
-const ipcRenderer = window.ipcRenderer;
+const { ipcRenderer } = require("ipcRenderer");
 
 export default {
   data: () => ({
