@@ -123,8 +123,6 @@ import permissions from "../../utils/permissions";
 import axios from "axios";
 import zutils from "../../utils/zutils";
 
-const { ipcRenderer } = require("electron");
-
 export default {
   data: () => ({
     search: "",
@@ -170,6 +168,7 @@ export default {
       // console.log("111122313")
       this.$store.commit("loading", true);
       await zutils.checkToken(this);
+
       await axios
         .get("/class/noThought/"+this.$store.state.info.class,{
 
@@ -264,8 +263,8 @@ export default {
     uploadPicture() {
       if (!this.opening) {
         this.opening = true;
-
-        ipcRenderer.once("open-picture-recv", (_, data) => {
+	
+	zutils.openPictures((data) => {
           if (data) {
             this.pictures.push({
               id: this.count,
@@ -273,10 +272,9 @@ export default {
             });
             this.count++;
           }
-          this.opening = false;
-        });
 
-        ipcRenderer.send("open-picture");
+          this.opening = false;
+	})
       }
     },
 

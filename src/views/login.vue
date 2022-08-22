@@ -54,7 +54,7 @@ import storeSaver from "../utils/storeSaver.js";
 let { ipcRenderer } = window.require('electron')
 
 var md5=require('md5-node');
-var current_version = "cb6a4549b3e44a70ee46319a049eb2b5";
+var current_version = "51141167bd8394d8da590fddaeb3d91e";
 // 版本号的加盐的MD5，记得改
 
 export default {
@@ -132,7 +132,8 @@ export default {
               });
 
               //看看是否加上创建义工
-              if (response.data.permission >= permissions.teacher) {
+              if (response.data.permission >= permissions.teacher
+               && response.data.permission != permissions.admin) {
                 this.drawers.push({
                   title: "创建义工",
                   to: "/volunteer/create",

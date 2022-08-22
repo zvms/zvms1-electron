@@ -86,5 +86,13 @@ export default {
                 callback(response.data.volunteer);
             })
             .catch((err) => { console.error(err) })
+    },
+
+    openPictures: (callback) => {
+        ipcRenderer.once("open-picture-recv", (_, data) => {
+            callback(data)
+        })
+
+        ipcRenderer.send("open-picture")
     }
 }

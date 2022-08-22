@@ -46,8 +46,9 @@ function createWindow() {
         skipTaskbar: false,
         webPreferences: {
             nodeIntegration: true,
-            webSecurity: false
-        }
+            webSecurity: false,
+            preload: path.join(__dirname, '/preload.js')
+	}
     })
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
