@@ -233,6 +233,10 @@ export default {
 
     submit: function () {
       this.dialog1 = false;
+      if (!this.thought) {
+        dialogs.toasts.error("没写感想就想交？在想桃子？");
+        return
+      }
       this.$store.commit("loading", true);
       axios
         .post("/volunteer/thought/"+this.volid,{
@@ -246,7 +250,8 @@ export default {
           // console.log(response.data);
           if (response.data.type == "SUCCESS") {
             dialogs.toasts.success(response.data.message);
-            location.reload();
+            // location.reload();
+            this.pageload()
           } else {
             dialogs.toasts.error(response.data.message);
           }

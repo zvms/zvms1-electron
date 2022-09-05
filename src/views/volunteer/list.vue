@@ -167,7 +167,7 @@ export default {
       await zutils.checkToken(this);
       ipcRenderer.send('endflash');
       this.fetchVol((volworks) => {
-          this.volworks = volworks;
+          this.volworks = volworks.sort((a, b) => b.id - a.id);
           this.$store.commit("lastSeenVol", this.volworks);
       });
     },

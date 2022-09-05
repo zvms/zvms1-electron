@@ -258,6 +258,22 @@ export default {
               this.large = "0";
             }
             console.log(status,this.inside,this.outside,this.large);
+
+            if (isNaN(parseInt(this.inside)) || isNaN(parseInt(this.outside)) || isNaN(parseInt(this.large))) {
+              dialogs.toasts.error("就连幼儿园的小孩子都知道，时间得是数字！！！")
+              return
+            }
+
+            if (this.inside[0] == "-" || this.outside[0] == "-" || this.large[0] == "-") {
+              dialogs.toasts.error("就连幼儿园的小孩子都知道，时间不能是负数！！！")
+              return
+            }
+
+            if (this.inside.length > 4 || this.outside.length > 4 || this.large.length > 4 ) {
+              dialogs.toasts.error("你这数字有点大我忍不下")
+              return
+            }
+
               this.$store.commit("loading", true);
             axios
               .post("/volunteer/audit/"+this.volid,{
@@ -290,7 +306,8 @@ export default {
                 this.$store.commit("loading", false);
               });
             this.$store.commit("loading", false);
-            location.reload();
+            // location.reload();
+            this.pageload()
           }
       });
     }
