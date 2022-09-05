@@ -1,1 +1,1 @@
-{"isLogined":false,"isLoading":false,"info":{},"lastSeenVol":[],"draweritems":[{"title":"登录","to":"/login","icon":"mdi-account-circle"},{"title":"反馈错误","to":"/report","icon":"mdi-alert"}]}
+{"isLogined":false,"isLoading":false,"info":{"username":"Admin","permission":3,"class":202001,"classname":"高二1班"},"lastSeenVol":[],"draweritems":[{"title":"登录","to":"/login","icon":"mdi-account-circle"},{"title":"反馈错误","to":"/report","icon":"mdi-alert"}]}

@@ -39,6 +39,25 @@
         </v-list-item>
       </v-card-actions>
     </v-card> -->
+
+    <v-card>
+      <v-card-title>
+        通知
+      </v-card-title>
+      <v-list shaped>
+        <v-list-item-group color="primary">
+          <v-list-item v-for="(notice, i) in notices" :key="i">
+            <v-list-item-icon>
+              <v-icon>mdi-message</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{ notice.title }}</v-list-item-title>
+              <v-list-item-subtitle>{{ notice.text }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-card>
   </v-container>
 </template>
 
@@ -57,10 +76,12 @@ export default {
       stuId: undefined,
       content: undefined,
     },
+    notices: []
   }),
   mounted: function () {
     this.initChips();
     // this.randomThought();
+    this.initNotices()
   },
   methods: {
     pageload: async function () {
@@ -109,6 +130,14 @@ export default {
           return "系统";
       }
     },
+
+    initNotices: async function () {
+      await zutils.fetchNotices((data) => {
+        if (data) {
+          this.notices = data.data
+        }
+      })
+    }
   },
 };
 </script>

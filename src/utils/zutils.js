@@ -94,5 +94,9 @@ export default {
         })
 
         ipcRenderer.send("open-picture")
+    },
+
+    fetchNotices: async (callback) => {
+        callback((await Axios.get("/user/notices").catch((err) => { console.error(err) })).data);
     }
 }

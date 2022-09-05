@@ -46,8 +46,7 @@ function createWindow() {
         skipTaskbar: false,
         webPreferences: {
             nodeIntegration: true,
-            webSecurity: false,
-            preload: path.join(__dirname, '/preload.js')
+            webSecurity: false
 	}
     })
 

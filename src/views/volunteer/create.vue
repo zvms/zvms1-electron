@@ -154,19 +154,16 @@
           />
           <v-text-field
             v-model="form.inside"
-            :rules="rules"
             label="校内时长（分钟）"
             prepend-icon="mdi-view-list"
           />
           <v-text-field
             v-model="form.outside"
-            :rules="rules"
             label="校外时长（分钟）"
             prepend-icon="mdi-view-list"
           />
           <v-text-field
             v-model="form.large"
-            :rules="rules"
             label="大型时长（分钟）"
             prepend-icon="mdi-view-list"
           />
@@ -236,14 +233,26 @@ export default {
       // if (true){
         console.log("创建义工");
         console.log(this.form);
-        if ((this.form.stuMax != parseInt(this.form.stuMax) || isNaN(parseInt(this.form.stuMax)) || parseInt(this.form.stuMax) <= 0 ||
-            this.form.inside != parseInt(this.form.inside) || isNaN(parseInt(this.form.inside)) || parseInt(this.form.inside) < 0 ||
-            this.form.outside != parseInt(this.form.outside) || isNaN(parseInt(this.form.outside)) || parseInt(this.form.outside) < 0 ||
-            this.form.large != parseInt(this.form.large) || isNaN(parseInt(this.form.large)) || parseInt(this.form.large) < 0) ||
-             (parseInt(this.form.large) == 0 && parseInt(this.form.outside) == 0 && parseInt(this.form.inside) == 0)) {
-                dialogs.toasts.error("数据不合法");
-                return;
-            }
+        
+        // 义工时间默认为0
+        if (!this.form.inside && !this.form.outside && !this.form.large) {
+          dialogs.toasts.error("义工时间可不能全为0啊...");
+          return;
+        }
+
+        this.form.inside = parseInt(this.form.inside) || 0;
+        this.form.outside = parseInt(this.form.outside) || 0;
+        this.form.large = parseInt(this.form.large) || 0;
+
+        if (this.form.stuMax != parseInt(this.form.stuMax)  || isNaN(parseInt(this.form.stuMax)) || parseInt(this.form.stuMax) <= 0 ||
+          this.form.inside  != parseInt(this.form.inside)  || parseInt(this.form.inside) < 0  ||
+          this.form.outside != parseInt(this.form.outside) || parseInt(this.form.outside) < 0 ||
+          this.form.large   != parseInt(this.form.large)   || parseInt(this.form.large) < 0)
+        {
+            dialogs.toasts.error("数据不合法");
+            return;
+        }
+        
         this.$store.commit("loading", true);
         axios
           .post("/volunteer/create", {
