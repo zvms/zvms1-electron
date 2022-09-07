@@ -21,7 +21,7 @@
             <thead>
               <td>班级</td>
               <td>最多报名人数</td>
-              <td>删除</td>
+              <td></td>
             </thead>
             <tbody>
               <tr
@@ -224,8 +224,8 @@ export default {
           ? (this.classes = classes)
           : dialogs.toasts.error("获取班级列表失败");
       });
-      for(let i = 0; i < this.classes.length; i ++)
-        this.mp[this.classes[i].id] = this.classes[i].name;
+      for(const cls of this.classes)
+        this.mp[cls.id] = cls.name;
       this.$store.commit("loading", false);
     },
     createVolunteer: function () {
@@ -284,7 +284,7 @@ export default {
           });
         }
       },
-      addToList: function (){
+      addToList: function () {
         let flg = false;
         if (this.class_new == "") flg = true;
         if (isNaN(parseInt(this.count_new)) || parseInt(this.count_new)<=0) flg = true;

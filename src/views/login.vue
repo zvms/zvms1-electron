@@ -131,6 +131,14 @@ export default {
                 icon: "mdi-view-list",
               });
 
+              if (response.data.permission >= permissions.teacher) {
+                this.drawers.push({
+                  title: "创建通知",
+                  to: "/notice",
+                  icon: "mdi-message",
+                });
+              }
+
               //看看是否加上创建义工
               if (response.data.permission >= permissions.teacher
                && response.data.permission != permissions.admin) {

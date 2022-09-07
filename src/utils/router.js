@@ -69,6 +69,11 @@ export default new Router({
 			path: '/volunteer/thought',
 			name: 'volunteerThought',
 			component: () => import('../views/volunteer/thought.vue')
+		},
+		{
+			path: '/notice',
+			name: 'noticeCreate',
+			component: () => import('../views/notice.vue')
 		}
 	]
 })

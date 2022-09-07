@@ -274,7 +274,7 @@ export default {
               return
             }
 
-              this.$store.commit("loading", true);
+            this.$store.commit("loading", true);
             axios
               .post("/volunteer/audit/"+this.volid,{
                 "thought": [{
