@@ -52,7 +52,7 @@
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>义工管理系统</v-list-item-title>
-            <v-list-item-subtitle>v1.2.2</v-list-item-subtitle>
+            <v-list-item-subtitle>v1.3.0</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-divider></v-divider>
