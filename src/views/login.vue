@@ -92,6 +92,9 @@ export default {
                 ipcRenderer.send('endflash');
               dialogs.toasts.success(response.data.message);
               //将一切保存到$store
+              zutils.fetchNotices((data) => {
+                this.$store.commit('notices', data.data);
+              })
               this.$store.commit("login", true);
               this.$store.commit("info", {
                 username: response.data.username,

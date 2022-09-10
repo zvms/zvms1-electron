@@ -98,5 +98,20 @@ export default {
 
     fetchNotices: async (callback) => {
         callback((await Axios.get("/user/notices").catch((err) => { console.error(err) })).data);
+    },
+
+    sendNotice: async (target, title, deadtime, message, callback) => {
+        callback((
+            await Axios
+            .post("/user/sendNotice", {
+                target,
+                title,
+                deadtime,
+                message
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        ).data);
     }
 }

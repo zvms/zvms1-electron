@@ -87,9 +87,10 @@ export default {
         axios
           .get("/student/volbook/" + this.userid)
           .then((response) => {
-            if (response.data.type == "ERROR")
-              dialogs.toasts.error(response.data.message);
-            else if (response.data.type == "SUCCESS") {
+            if (response.data.type == "ERROR") {
+              if (response.data.message != "该学生没有义工记录")
+                dialogs.toasts.error(response.data.message);
+            } else if (response.data.type == "SUCCESS") {
               this.volworks = response.data.rec;
               for (let i in this.volworks){
                 this.volworks[i].inside = this.timeToHint(this.volworks[i].inside);

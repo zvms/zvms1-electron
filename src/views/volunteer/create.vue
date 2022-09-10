@@ -228,7 +228,7 @@ export default {
         this.mp[cls.id] = cls.name;
       this.$store.commit("loading", false);
     },
-    createVolunteer: function () {
+    createVolunteer: async function () {
       if (this.$refs.form.validate()) {
       // if (true){
         console.log("创建义工");
@@ -254,7 +254,7 @@ export default {
         }
         
         this.$store.commit("loading", true);
-        axios
+        await axios
           .post("/volunteer/create", {
             name: this.form.name,
             date: this.form.date,
@@ -270,18 +270,26 @@ export default {
             console.log(response.data);
             if (response.data.type == "SUCCESS") {
               dialogs.toasts.success(response.data.message);
-              for(let k in this.form)
-                this.form[k] = undefined
             } else {
               dialogs.toasts.error(response.data.message);
             }
           })
           .catch((err) => {
             dialogs.toasts.error(err);
-          })
-          .finally(() => {
-            this.$store.commit("loading", false);
           });
+
+          const d = new Date();
+          await zutils.sendNotice(
+            this.classSelected.map((i) => i.id),
+            "新的义工", 
+            d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + (d.getDate() + 2),
+            this.form.description, () => {
+              for(let k in this.form)
+                this.form[k] = undefined
+              this.classSelected = []
+            }
+          );
+          this.$store.commit("loading", false);
         }
       },
       addToList: function () {

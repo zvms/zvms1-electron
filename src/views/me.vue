@@ -46,7 +46,7 @@
       </v-card-title>
       <v-list shaped>
         <v-list-item-group color="primary">
-          <v-list-item v-for="(notice, i) in notices" :key="i">
+          <v-list-item v-for="(notice, i) in $store.state.notices" :key="i">
             <v-list-item-icon>
               <v-icon>mdi-message</v-icon>
             </v-list-item-icon>
@@ -76,12 +76,12 @@ export default {
       stuId: undefined,
       content: undefined,
     },
-    notices: []
+    notices: [],
+    timer: undefined
   }),
   mounted: function () {
     this.initChips();
     // this.randomThought();
-    this.initNotices()
   },
   methods: {
     pageload: async function () {
@@ -129,14 +129,6 @@ export default {
         case permissions.system:
           return "系统";
       }
-    },
-
-    initNotices: async function () {
-      await zutils.fetchNotices((data) => {
-        if (data) {
-          this.notices = data.data
-        }
-      })
     }
   },
 };

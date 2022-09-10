@@ -68,6 +68,37 @@
                     label="要发送的消息"
                 ></v-textarea>
             </v-form>
+            <v-dialog
+                ref="dateDialog"
+                v-model="modalDate"
+                :return-value.sync="form.date"
+                persistent
+                width="290px"
+            >
+                <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                    v-model="form.date"
+                    label="通知到期日期"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                ></v-text-field>
+                </template>
+                <v-date-picker v-model="form.date" scrollable>
+                <v-spacer></v-spacer>
+                <v-btn text color="primary" @click="modalDate = false">
+                    取消
+                </v-btn>
+                <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.dateDialog.save(form.date)"
+                >
+                    确认
+                </v-btn>
+                </v-date-picker>
+            </v-dialog>
             <v-card-actions>
                 <v-btn
                     color="primary"
@@ -84,18 +115,19 @@
 <script>
 import dialogs from "../utils/dialogs";
 import zutils from "../utils/zutils";
-import axios from "axios";
 
 export default {
     data: () => ({
         form: {
             title: "",
-            message: ""
+            message: "",
+            date: ""
         },
         users: undefined,
         target_new: undefined,
         userSelected: [],
-        mp: {}
+        mp: {},
+        modalDate: false
     }),
     mounted: function() {
         this.pageload()
@@ -132,28 +164,27 @@ export default {
             this.userSelected.splice(i, 1);
         },
         send: function () {
-            axios
-                .post("/user/sendNotice", {
-                    target: this.userSelected,
-                    title: this.form.title,
-                    message: this.form.message
-                })
-                .then((response) => {
-                    console.log(response.data);
-                    if (response.data.type == "SUCCESS") {
-                        dialogs.toasts.success(response.data.message);
+            this.$store.commit("loading", true);
+
+            zutils.sendNotice(
+                this.userSelected,
+                this.form.title,
+                this.form.date,
+                this.form.message,
+
+                (data) => {
+                    if (data.type == "SUCCESS") {
+                        dialogs.toasts.success(data.message);
                         for(let k in this.form)
                             this.form[k] = undefined
+                        this.userSelected = []
                     } else {
-                        dialogs.toasts.error(response.data.message);
+                        dialogs.toasts.error(data.message);
                     }
-                })
-                .catch((err) => {
-                    dialogs.toasts.error(err);
-                })
-                .finally(() => {
-                    this.$store.commit("loading", false);
-                });
+                }
+            )
+            
+            this.$store.commit("loading", false);
         }
     }
 }

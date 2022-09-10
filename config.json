@@ -1,1 +1,1 @@
-{"isLogined":false,"isLoading":false,"info":{},"lastSeenVol":[],"draweritems":[{"title":"登录","to":"/login","icon":"mdi-account-circle"},{"title":"反馈错误","to":"/report","icon":"mdi-alert"}]}
+{"notices":[],"isLogined":false,"isLoading":false,"info":{},"lastSeenVol":[],"draweritems":[{"title":"登录","to":"/login","icon":"mdi-account-circle"},{"title":"反馈错误","to":"/report","icon":"mdi-alert"}]}

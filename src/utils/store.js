@@ -7,6 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     //用于保存状态的store
     state: {
+        notices: undefined,
         isLogined: false,
         isLoading: false,
         token: undefined,
@@ -82,6 +83,9 @@ export default new Vuex.Store({
         },
         lastSeenVol: (state, payload) => {
             state.lastSeenVol = payload
+        },
+        notices: (state, payload) => {
+            state.notices = payload
         }
     },
     plugins: [createPersistedState()]

@@ -144,6 +144,9 @@ export default {
 
   mounted: async function () {
     await zutils.fetchAllVolunter((volworks) => { this.vol = volworks; });
+    await zutils.fetchNotices((data) => {
+      this.$store.commit('notices', data.data);
+    })
     setInterval(this.listen, 60000, this);
   },
 
@@ -156,9 +159,9 @@ export default {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
     },
 
-    fetchVol: function () {
-       if (this.granted()) this.fetchCurrentClassVol();
-       else this.fetchAllVol();
+    fetchVol: async function () {
+       if (this.granted()) await this.fetchCurrentClassVol();
+       else await this.fetchAllVol();
     },
 
     async fetchCurrentClassVol() {
@@ -193,8 +196,12 @@ export default {
       }
 
       storeSaver.saveState(this);
-      zutils.checkToken(t);
-      t.fetchVol();
+      await zutils.checkToken(t);
+      await t.fetchVol();
+      await zutils.fetchNotices((data) => {
+        console.log(data.data)
+        t.$store.commit('notices', data.data);
+      })
       let flag = false;
       let last = t.$store.state.lastSeenVol;
       let vol = t.currentVol;
