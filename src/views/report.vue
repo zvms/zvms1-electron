@@ -25,11 +25,13 @@
 <script>
 import dialogs from "../utils/dialogs";
 import axios from "axios";
+import { NOTEMPTY } from "../utils/validation";
 
 export default {
   name: "report",
   data: () => ({
-    report: undefined
+    report: undefined,
+    rules: [NOTEMPTY()]
   }),
   mounted: function () {
     this.pageload();

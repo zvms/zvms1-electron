@@ -128,6 +128,8 @@ export default {
           return "管理员";
         case permissions.system:
           return "系统";
+        case permissions._super:
+          return "超管";
       }
     }
   },

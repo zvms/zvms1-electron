@@ -20,6 +20,7 @@
             v-model="form.userid"
             :rules="rules"
             label="用户ID"
+            @keyup.native.enter="login"
           />
           <v-text-field
             type="password"
@@ -108,9 +109,8 @@ export default {
               //更新抽屉导航栏
               this.drawers = [
                 { title: "我的", to: "/me", icon: "mdi-account-circle" },
-                { title: "修改密码", to: "/modifyPwd", icon: "mdi-account-circle"}
+                { title: "修改密码", to: "/modifyPwd", icon: "mdi-lock"}
               ];
-
               //看看是否加上班级列表
               if (response.data.permission >= permissions.teacher) {
                 this.drawers.push({
@@ -124,21 +124,20 @@ export default {
                 this.drawers.push({
                   title: "学生列表",
                   to: "/class/stulist/"+response.data.class,
-                  icon: "mdi-view-list",
+                  icon: "mdi-format-list-bulleted-square",
                 });
-                
               }
               this.drawers.push({
                 title: "义工列表",
                 to: "/volunteer/list",
-                icon: "mdi-view-list",
+                icon: "mdi-format-list-text",
               });
 
               if (response.data.permission >= permissions.teacher) {
                 this.drawers.push({
                   title: "创建通知",
                   to: "/notice",
-                  icon: "mdi-message",
+                  icon: "mdi-message-draw",
                 });
               }
 
@@ -148,37 +147,42 @@ export default {
                 this.drawers.push({
                   title: "创建义工",
                   to: "/volunteer/create",
-                  icon: "mdi-view-list",
+                  icon: "mdi-folder-multiple-plus",
                 });
               }
               if (response.data.permission > permissions.teacher) {
                 this.drawers.push({
                   title: "审核感想",
                   to: "/volunteer/audit",
-                  icon: "mdi-view-list",
+                  icon: "mdi-check-circle",
                 });
               }
               if (response.data.permission == permissions.secretary){
                 this.drawers.push({
-                  title: "假期义工",
+                  title: "义工自提交",
                   to: "/volunteer/holiday",
-                  icon: "mdi-view-list",
+                  icon: "mdi-cloud-upload",
                 });
                 this.drawers.push({
                   title: "感想提交",
                   to: "/volunteer/thought",
-                  icon: "mdi-view-list",
+                  icon: "mdi-upload",
                 });
               }
-              this.drawers.push({
-                title: "登出",
-                to: "/logout",
-                icon: "mdi-exit-to-app",
-              });
               this.drawers.push({
                 title: "反馈错误",
                 to: "/report",
                 icon: "mdi-alert",
+              });
+              this.drawers.push({
+                title: "关于我们",
+                to: "/about",
+                icon: "mdi-help-circle",
+              });
+              this.drawers.push({
+                title: "登出",
+                to: "/logout",
+                icon: "mdi-exit-to-app",
               });
               this.$store.commit("draweritems", this.drawers);
             } else if (response.data.type == "ERROR") {

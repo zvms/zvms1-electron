@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-card>
-      <v-card-title>假期义工统一提交</v-card-title>
+      <v-card-title>义工自提交</v-card-title>
       <v-card-text>
         <v-form>
           <v-text-field
@@ -131,13 +131,6 @@
               </tr>
             </tbody>
           </v-simple-table>
-
-          <v-text-field
-            v-model="form.ftp"
-            :rules="rules"
-            label="义工证明材料（请上传到ftp并输入ftp地址）"
-            prepend-icon="mdi-pen"
-          />
           
           <v-text-field
             v-model="form.description"
@@ -200,7 +193,6 @@ export default {
       date: undefined,
       time: null,
       stuSelected: [],
-      ftp: undefined,
       description: undefined,
       inside: undefined,
       outside: undefined,
@@ -256,10 +248,10 @@ export default {
           date: this.form.date,
           time: this.form.time,
           stuId: this.form.stuSelected,
-          description: "假期义工：" + this.form.ftp + "；" + this.form.description,
-          inside: parseInt(this.form.inside),
-          outside: parseInt(this.form.outside),
-          large: parseInt(this.form.large),
+          description: "自提交义工：" + this.form.description,
+          inside: isNaN(parseInt(this.form.inside)) ? 0 : parseInt(this.form.inside),
+          outside: isNaN(parseInt(this.form.outside)) ? 0 : parseInt(this.form.outside),
+          large: isNaN(parseInt(this.form.large)) ? 0 : parseInt(this.form.large),
         })
         .then((response) => {
           // console.log(response.data);

@@ -20,7 +20,8 @@ export default new Vuex.Store({
         lastSeenVol: undefined,
         draweritems: [
             { title: '登录', to: '/login', icon: 'mdi-account-circle' },
-            { title: "反馈错误", to: "/report", icon: "mdi-alert" }
+            { title: "反馈错误", to: "/report", icon: "mdi-alert" },
+            { title: "关于我们", to: "/about", icon: "mdi-help-circle" }
             // {
             //     "title": "我的",
             //     "to": "/me",

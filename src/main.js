@@ -9,8 +9,8 @@ import './plugins/nprogress.css'
 
 Vue.config.productionTip = false;
 
-axios.defaults.baseURL = "http://172.31.2.2:5000";
-// axios.defaults.baseURL = "http://localhost:5000";
+// axios.defaults.baseURL = "http://172.31.2.2:5000";
+axios.defaults.baseURL = "http://localhost:5000";
 
 //axios携带cookie
 axios.defaults.withCredentials = true;
@@ -35,7 +35,7 @@ axios.interceptors.request.use(
 
 router.beforeEach((to, from, next) => {
 	NProgress.start();
-	if (to.path == '/report') next();
+	if (to.path == '/report' || to.path == '/about') next();
 	else if (to.path != '/login') {
 		// console.log(233);
 		// console.log(to,from,next);

@@ -216,28 +216,28 @@ export default {
         this.dialog1 = false;
     },
     participants: function (volid){
-    this.dialog_participant = true;
-    this.volid = volid;
-    this.participantsLst = [];
-    axios
-      .get("/volunteer/signerList/"+volid, {
+      this.dialog_participant = true;
+      this.volid = volid;
+      this.participantsLst = [];
+      axios
+        .get("/volunteer/signerList/"+volid, {
 
-      })
-      .then((response) => {
-        console.log(response.data);
-        if (response.data.type == "SUCCESS") {
-          dialogs.toasts.success(response.data.message);
-          this.participantsLst = response.data.result;
-        } else {
-          dialogs.toasts.error(response.data.message);
-        }
-      })
-      .catch((err) => {
-        dialogs.toasts.error(err);
-      })
-      .finally(() => {
-        this.$store.commit("loading", false);
-      });
+        })
+        .then((response) => {
+          console.log(response.data);
+          if (response.data.type == "SUCCESS") {
+            dialogs.toasts.success(response.data.message);
+            this.participantsLst = response.data.result;
+          } else {
+            dialogs.toasts.error(response.data.message);
+          }
+        })
+        .catch((err) => {
+          dialogs.toasts.error(err);
+        })
+        .finally(() => {
+          this.$store.commit("loading", false);
+        });
     },
     volDetail: function (volid) {
       console.log("Detail:" + volid);

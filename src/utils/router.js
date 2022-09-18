@@ -74,6 +74,11 @@ export default new Router({
 			path: '/notice',
 			name: 'noticeCreate',
 			component: () => import('../views/notice.vue')
+		},
+		{
+			path: '/about',
+			name: 'about',
+			component: () => import('../views/about.vue')
 		}
 	]
 })

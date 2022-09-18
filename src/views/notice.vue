@@ -61,11 +61,13 @@
                 <v-text-field
                     v-model="form.title"
                     label="标题"
+                    :rules="rules"
                 ></v-text-field>
                 <v-textarea
                     v-model="form.message"
                     :auto-grow="true"
                     label="要发送的消息"
+                    :rules="rules"
                 ></v-textarea>
             </v-form>
             <v-dialog
@@ -78,7 +80,7 @@
                 <template v-slot:activator="{ on, attrs }">
                 <v-text-field
                     v-model="form.date"
-                    label="通知到期日期"
+                    label="通知到期日期（默认持续三天）"
                     prepend-icon="mdi-calendar"
                     readonly
                     v-bind="attrs"
@@ -115,19 +117,21 @@
 <script>
 import dialogs from "../utils/dialogs";
 import zutils from "../utils/zutils";
+import { NOTEMPTY } from "../utils/validation";
 
 export default {
     data: () => ({
         form: {
-            title: "",
-            message: "",
-            date: ""
+            title: undefined,
+            message: undefined,
+            date: undefined
         },
         users: undefined,
         target_new: undefined,
         userSelected: [],
         mp: {},
-        modalDate: false
+        modalDate: false,
+        rules: [NOTEMPTY()]
     }),
     mounted: function() {
         this.pageload()
@@ -164,6 +168,16 @@ export default {
             this.userSelected.splice(i, 1);
         },
         send: function () {
+            if (!this.userSelected || this.userSelected.length == 0) {
+                dialogs.toasts.error("请选择发送目标");
+                return
+            }
+
+            if (!this.form.date) {
+                const d = new Date()
+                this.form.date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + (d.getDate() + 2)
+            }
+
             this.$store.commit("loading", true);
 
             zutils.sendNotice(

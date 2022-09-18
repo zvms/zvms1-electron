@@ -270,6 +270,22 @@ export default {
             console.log(response.data);
             if (response.data.type == "SUCCESS") {
               dialogs.toasts.success(response.data.message);
+
+              const d = new Date();
+              this.classSelected.forEach(async (i) => {
+                await zutils.sendNotice(
+                  [i.id],
+                  `新的义工：${this.form.name}（限报人数：${i.stuMax}）`,
+                  d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + (d.getDate() + 2),
+                  this.form.description, () => {
+                    for(let k in this.form)
+                      this.form[k] = undefined
+                    this.classSelected = []
+                  }
+                )
+              });
+
+              this.$router.push('/me');
             } else {
               dialogs.toasts.error(response.data.message);
             }
@@ -278,17 +294,6 @@ export default {
             dialogs.toasts.error(err);
           });
 
-          const d = new Date();
-          await zutils.sendNotice(
-            this.classSelected.map((i) => i.id),
-            "新的义工", 
-            d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + (d.getDate() + 2),
-            this.form.description, () => {
-              for(let k in this.form)
-                this.form[k] = undefined
-              this.classSelected = []
-            }
-          );
           this.$store.commit("loading", false);
         }
       },
