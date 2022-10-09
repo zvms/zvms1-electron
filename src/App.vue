@@ -52,7 +52,7 @@
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>义工管理系统</v-list-item-title>
-            <v-list-item-subtitle>v1.3.0</v-list-item-subtitle>
+            <v-list-item-subtitle>v1.3.2</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-divider></v-divider>
@@ -94,17 +94,6 @@
         <router-view></router-view>
       </v-container>
     </v-main>
-    <v-footer
-      dense
-      absolute
-      class="font-weight-light"
-      padless
-      color="rgba(255,255,255,0.3)"
-    >
-      <v-col class="text-center" cols="12"
-        >{{ new Date().getFullYear() }} - © neko_moyi &amp; Zecyel &amp; fpc5719 &amp; So1aric &amp; Solecour &amp; dblark </v-col
-      >
-    </v-footer>
   </v-app>
 </template>
 
