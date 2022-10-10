@@ -46,7 +46,11 @@
       </v-card-title>
       <v-list shaped>
         <v-list-item-group color="primary">
-          <v-list-item v-for="(notice, i) in $store.state.notices" :key="i">
+          <v-list-item
+            v-for="(notice, i) in $store.state.notices"
+            :key="i"
+            @click="showNotice(notice)"
+          >
             <v-list-item-icon>
               <v-icon>mdi-message</v-icon>
             </v-list-item-icon>
@@ -58,6 +62,13 @@
         </v-list-item-group>
       </v-list>
     </v-card>
+    
+    <v-dialog v-model="dialog" max-width="80%">
+      <v-card>
+        <v-card-title>{{ curNoticeTitle }}</v-card-title>
+        <v-card-text v-html="curNoticeText"></v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -77,6 +88,9 @@ export default {
       content: undefined,
     },
     notices: [],
+    dialog: false,
+    curNoticeTitle: "",
+    curNoticeText: "",
     timer: undefined
   }),
   mounted: function () {
@@ -131,6 +145,19 @@ export default {
         case permissions._super:
           return "超管";
       }
+    },
+    showNotice(notice) {
+      this.dialog = true;
+      this.curNoticeTitle = notice.title;
+      let s = "";
+      for (const c of notice.text) {
+        if (c == "\n") {
+          s += "<br />"
+        } else {
+          s += c
+        }
+      }
+      this.curNoticeText = s;
     }
   },
 };
