@@ -269,7 +269,7 @@ export default {
       if (!this.opening) {
         this.opening = true;
 	
-	zutils.openPictures((data) => {
+        zutils.openPictures((data) => {
           if (data) {
             this.pictures.push({
               id: this.count,
@@ -279,7 +279,7 @@ export default {
           }
 
           this.opening = false;
-	})
+        })
       }
     },
 

@@ -97,6 +97,14 @@ export default {
         ipcRenderer.send("open-picture")
     },
 
+    openCSV: (callback) => {
+        ipcRenderer.once("open-csv-recv", (_, data) => {
+            callback(data)
+        })
+
+        ipcRenderer.send("open-csv")
+    },
+
     fetchNotices: async (callback) => {
         callback((await Axios.get("/user/notices").catch((err) => { console.error(err) })).data);
     },

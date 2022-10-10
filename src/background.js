@@ -165,6 +165,34 @@ function createWindow() {
             event.sender.send("open-picture-recv", null);
         }
     })
+
+    ipcMain.on("open-csv", async (e) => {
+        if (opening) return;
+        opening = true;
+
+        let o = await dialog.showOpenDialog({
+            title: "请选择CSV：",
+            buttonLabel: "确定",
+            defaultPath: app.getPath('desktop'),
+            properties: ["singleSelection"],
+            filters : [
+                { name: "csv", extensions: ["csv"] }
+            ]
+        });
+
+        opening = false;
+
+        if (!o.canceled) {
+            fs.readFile(o.filePaths[0], (err, data) => {
+                if (err) console.error(err);
+                else {
+                    e.sender.send("open-csv-recv", String(data));
+                }
+            });
+        } else {
+            e.sender.send("open-csv-recv", null);
+        }
+    })
 }
 
 // Quit when all windows are closed.

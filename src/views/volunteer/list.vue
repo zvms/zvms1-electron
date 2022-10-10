@@ -21,6 +21,10 @@
           <v-icon left>mdi-clipboard-text</v-icon>
           查看已报名
         </v-btn>
+        <v-btn v-if="granted()" color="primary" @click="thoughtSubmitDialog(vol.id)">
+          <v-icon left>mdi-upload</v-icon>
+          感想提交
+        </v-btn>
         <v-btn v-if="granted()" color="primary" @click="volSignUp(vol.id)">
           <v-icon left>mdi-account-plus</v-icon>
           报名
@@ -123,6 +127,46 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="dialog2" max-width="80%">
+      <v-card>
+        <v-card-title>感想提交（班级）</v-card-title>
+
+        <div v-if="pictures.length > 0" style="left: 50px; position: relative;">
+          <v-card-text>图片（点击图片以删除）</v-card-text>
+          <ul v-for="(pic, i) in pictures" :key="i">
+            <li>
+              <img :src="'data:image/png;base64,' + pic"
+                class="pic"
+                @click="removePic(i)"
+                style="cursor: pointer"
+              >
+            </li>
+          </ul>
+        </div>
+
+        <v-divider></v-divider>
+
+        <v-simple-table style="margin:20px;" v-if="thoughts.length > 0">
+          <thead>
+            <td>学号</td>
+            <td>感想</td>
+          </thead>
+          <tbody>
+            <tr v-for="(thought, i) in thoughts" :key="i">
+              <td>{{ thought.stuId }}</td>
+              <td>{{ thought.thought }}</td>
+            </tr>
+          </tbody>
+        </v-simple-table>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red darken-1" text @click="choosePictures()">选择义工图片</v-btn>
+          <v-btn color="red darken-1" text @click="chooseCSV()">选择义工感想csv</v-btn>
+          <v-btn color="red darken-1" text @click="submitThought()">提交</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -145,6 +189,12 @@ export default {
     dialog: false,
     dialog_participant: false,
     dialog1: false,
+    
+    dialog2: false,
+    curVolId: null,
+    pictures: [],
+    thoughts: [],
+
     submitThoughtDialog: false,
     volid: undefined,
     onlyDisplayCurrentClass: true,
@@ -187,6 +237,94 @@ export default {
           this.mp[this.stulst[i].id] = this.stulst[i].name;
         console.log(this.mp);
       });
+    },
+    thoughtSubmitDialog: function (volId) {
+      this.dialog2 = true;
+      this.curVolId = volId;
+    },
+    removePic(i) {
+      this.pictures.splice(i, 1)
+    },
+    choosePictures: function () {
+      zutils.openPictures((data) => {
+        if (data === null) return;
+
+        this.pictures.push(data)
+      })
+    },
+    chooseCSV: function () {
+      zutils.openCSV((data) => {
+        if (data === null) return;
+
+        this.thoughts = []
+
+        data = data.split('\n')
+        data.shift()
+        
+        let error = false;
+        data.forEach(e => {
+          if (error) return
+
+          let v = e.split(',')
+          if (v.length < 2) {
+            if (!(v.length == 1 && v[0] == "")) {
+              dialogs.toasts.error(`${e}格式有问题`)
+              error = true
+            }
+            return
+          }
+
+          v = [v[0]].concat(v.slice(1).join(','))
+
+          if (isNaN(parseInt(v[0]))) {
+            dialogs.toasts.error(`学号${v[0]}不合法（必须是纯数字）`)
+            error = true
+            return
+          }
+          this.thoughts.push({
+            stuId: v[0],
+            thought: v[1]
+          })
+        });
+
+        console.log(this.thoughts)
+
+      })
+    },
+    submitThought() {
+      this.dialog2 = false;
+      this.$store.commit("loading", true);
+      this.thoughts.forEach((e) => {
+        console.log(parseInt(e.stuId), e.stuId)
+        axios
+        .post("/volunteer/thought/"+this.curVolId,{
+          "thought": [{
+            "stuId": parseInt(e.stuId),
+            "content": e.thought,
+            "pictures": this.pictures
+          }],
+        })
+        .then((response) => {
+          // console.log(response.data);
+          if (response.data.type == "SUCCESS") {
+            dialogs.toasts.success(response.data.message);
+            // location.reload();
+            this.pageload()
+          } else {
+            dialogs.toasts.error(response.data.message);
+          }
+        })
+        .catch((err) => {
+          dialogs.toasts.error(err);
+        })
+        .finally(() => {
+          this.$store.commit("loading", false);
+        });
+      })
+      this.pictures = []
+      this.thoughts = []
+      this.curVolId = null
+      this.$store.commit("loading", false);
     },
     signupVolunteer: function(volid){
       if (this.stulstSelected.length == 0){
@@ -300,4 +438,10 @@ export default {
 .v-card {
   margin: 0.3rem;
 }
+
+.pic {
+  width: auto;
+  height: 120px;
+}
+
 </style>
