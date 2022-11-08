@@ -36,7 +36,7 @@
 <script>
 import dialogs from "../utils/dialogs";
 import axios from "axios";
-import zutils from "../utils/zutils";
+import { fApi } from "./apis";
 
 var md5=require('md5-node');
 export default {

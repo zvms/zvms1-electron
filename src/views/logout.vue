@@ -7,6 +7,8 @@
 <script>
 import axios from "axios";
 import dialogs from "../utils/dialogs.js";
+import { applyNavItems } from "../utils/nav";
+import { permissionTypes } from "../utils/permissions";
 import storeSaver from "../utils/storeSaver.js";
 
 export default {
@@ -38,11 +40,7 @@ export default {
           dialogs.toasts.error(error);
         })
         .finally(() => {
-          this.$store.commit("draweritems", [
-            { title: "登录", to: "/login", icon: "mdi-account-circle" },
-            { title: "反馈错误", to: "/report", icon: "mdi-alert" },
-            { title: "关于我们", to: "/about", icon: "mdi-help-circle" },
-          ]);
+          applyNavItems(permissionTypes.none);
           this.$router.push("/login");
           this.$store.commit("loading", false);
           this.$store.commit("login", false);

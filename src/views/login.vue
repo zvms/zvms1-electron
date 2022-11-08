@@ -1,60 +1,33 @@
 <template>
-  <v-card
-    id="bgcard"
-    class="d-flex mb-6 align-center justify-center"
-    outlined
-    color="rgba(255, 255, 255, 0)"
-    :height="winheight"
-  >
+  <v-card id="bgcard" class="d-flex mb-6 align-center justify-center" outlined color="rgba(255, 255, 255, 0)"
+    :height="winheight">
     <v-card class="mx-auto" width="50%" max-width="500" min-width="250">
-      <v-card-title
-        class="headline primary white--text"
-        style="backdrop-filter: blur(2px)"
-        >登录</v-card-title
-      >
+      <v-card-title class="headline primary white--text" style="backdrop-filter: blur(2px)">登录</v-card-title>
       <br />
       <v-card-text>
         <v-form ref="form">
-          <v-text-field
-            type="username"
-            v-model="form.userid"
-            :rules="rules"
-            label="用户ID"
-            @keyup.native.enter="login"
-          />
-          <v-text-field
-            type="password"
-            v-model="form.password"
-            :rules="rules"
-            label="密码"
-            @keyup.native.enter="login"
-          />
+          <v-text-field type="username" v-model="form.userid" :rules="rules" label="用户ID" @keyup.native.enter="login" />
+          <v-text-field type="password" v-model="form.password" :rules="rules" label="密码" @keyup.native.enter="login" />
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn
-          color="primary"
-          block
-          :disabled="$store.state.isLoading"
-          @click="login"
-          >登录</v-btn
-        >
+        <v-btn color="primary" block :disabled="$store.state.isLoading" @click="login">登录</v-btn>
       </v-card-actions>
     </v-card>
   </v-card>
 </template>
 
 <script>
-import zutils from "../utils/zutils.js"
+import { fApi } from "../apis"
 import dialogs from "../utils/dialogs.js"; //弹出toast提示用
 import { NOTEMPTY } from "../utils/validation.js"; //校验表单完整性
 import axios from "axios"; //ajax网络库
-import permissions from "../utils/permissions.js";
+import { applyNavItems } from "../utils/nav";
 import storeSaver from "../utils/storeSaver.js";
 
 let { ipcRenderer } = window.require('electron')
 
-var md5=require('md5-node');
+var md5 = require('md5-node');
 var current_version = "51141167bd8394d8da590fddaeb3d91e";
 // 版本号的加盐的MD5，记得改
 
@@ -66,7 +39,6 @@ export default {
       userid: undefined,
       password: undefined,
     },
-    drawers: undefined,
     rules: [NOTEMPTY()], //表单校验规则
     winheight: document.documentElement.clientHeight - 100, //一个比较失败的自动调整大小
   }),
@@ -86,16 +58,15 @@ export default {
             "password": md5(this.form.password),
             "version": current_version
           })
-          .then((response) => {
+          .then(async (response) => {
             //对传回数据进行处理
             // console.log(response.data)
             if (response.data.type == "SUCCESS") {
-                ipcRenderer.send('endflash');
+              ipcRenderer.send('endflash');
               dialogs.toasts.success(response.data.message);
               //将一切保存到$store
-              zutils.fetchNotices((data) => {
-                this.$store.commit('notices', data.data);
-              })
+              this.$store.commit('notices', await fApi.fetchNotices());
+
               this.$store.commit("login", true);
               this.$store.commit("info", {
                 username: response.data.username,
@@ -107,84 +78,7 @@ export default {
               this.$store.commit("token", response.data.token);
               this.$router.push("/me");
               //更新抽屉导航栏
-              this.drawers = [
-                { title: "我的", to: "/me", icon: "mdi-account-circle" },
-                { title: "修改密码", to: "/modifyPwd", icon: "mdi-lock"}
-              ];
-              //看看是否加上班级列表
-              if (response.data.permission >= permissions.teacher) {
-                this.drawers.push({
-                  title: "班级列表",
-                  to: "/class/list",
-                  icon: "mdi-view-list",
-                });
-              }
-              //看看是否加上学生列表
-              if (response.data.permission >= permissions.secretary) {
-                this.drawers.push({
-                  title: "学生列表",
-                  to: "/class/stulist/"+response.data.class,
-                  icon: "mdi-format-list-bulleted-square",
-                });
-              }
-              this.drawers.push({
-                title: "义工列表",
-                to: "/volunteer/list",
-                icon: "mdi-format-list-text",
-              });
-
-              if (response.data.permission >= permissions.teacher) {
-                this.drawers.push({
-                  title: "创建通知",
-                  to: "/notice",
-                  icon: "mdi-message-draw",
-                });
-              }
-
-              //看看是否加上创建义工
-              if (response.data.permission >= permissions.teacher
-               && response.data.permission != permissions.admin) {
-                this.drawers.push({
-                  title: "创建义工",
-                  to: "/volunteer/create",
-                  icon: "mdi-folder-multiple-plus",
-                });
-              }
-              if (response.data.permission > permissions.teacher) {
-                this.drawers.push({
-                  title: "审核感想",
-                  to: "/volunteer/audit",
-                  icon: "mdi-check-circle",
-                });
-              }
-              if (response.data.permission == permissions.secretary){
-                this.drawers.push({
-                  title: "义工自提交",
-                  to: "/volunteer/holiday",
-                  icon: "mdi-cloud-upload",
-                });
-                this.drawers.push({
-                  title: "感想提交",
-                  to: "/volunteer/thought",
-                  icon: "mdi-upload",
-                });
-              }
-              this.drawers.push({
-                title: "反馈错误",
-                to: "/report",
-                icon: "mdi-alert",
-              });
-              this.drawers.push({
-                title: "关于我们",
-                to: "/about",
-                icon: "mdi-help-circle",
-              });
-              this.drawers.push({
-                title: "登出",
-                to: "/logout",
-                icon: "mdi-exit-to-app",
-              });
-              this.$store.commit("draweritems", this.drawers);
+              applyNavItems(response.data.permission);
             } else if (response.data.type == "ERROR") {
               dialogs.toasts.error(response.data.message);
               this.form.password = undefined;

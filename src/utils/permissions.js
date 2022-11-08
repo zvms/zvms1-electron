@@ -1,4 +1,5 @@
-const permissionTypes = {
+export const permissionTypes = {
+    none:-1,
     secretary: 0,
     teacher: 1,
     admin: 2,
@@ -6,7 +7,7 @@ const permissionTypes = {
     system: 3
 }
 
-const permissionNames = {
+export const permissionNames = {
     [permissionTypes.secretary]: "团支书",
     [permissionTypes.teacher]: "教师",
     [permissionTypes.admin]: "管理员",

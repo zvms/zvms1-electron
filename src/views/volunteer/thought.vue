@@ -119,9 +119,9 @@
 
 <script>
 import dialogs from "../../utils/dialogs.js";
-import permissions from "../../utils/permissions";
+import {permissionTypes} from "../../utils/permissions";
 import axios from "axios";
-import zutils from "../../utils/zutils";
+import { fApi } from "../../apis";
 
 export default {
   data: () => ({
@@ -165,7 +165,7 @@ export default {
     },
 
     async pageload() {
-      // console.log("111122313")
+      
       this.$store.commit("loading", true);
       await zutils.checkToken(this);
 
@@ -192,7 +192,7 @@ export default {
     },
 
     granted: function () {
-      return this.$store.state.info.permission < permissions.teacher;
+      return this.$store.state.info.permission < permissionTypes.teacher;
     },
 
     rowClick: function (item) {

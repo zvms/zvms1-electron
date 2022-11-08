@@ -75,7 +75,7 @@
 <script>
 import axios from "axios";
 import dialogs from "../utils/dialogs";
-import permissions from "../utils/permissions";
+import {permissionTypes} from "../utils/permissions";
 import zutils from "../utils/zutils";
 
 export default {
@@ -134,15 +134,15 @@ export default {
     },
     permission2str: function (per) {
       switch (per) {
-        case permissions.secretary:
+        case permissionTypes.secretary:
           return "团支书";
-        case permissions.teacher:
+        case permissionTypes.teacher:
           return "教师";
-        case permissions.admin:
+        case permissionTypes.admin:
           return "管理员";
-        case permissions.system:
+        case permissionTypes.system:
           return "系统";
-        case permissions._super:
+        case permissionTypes._super:
           return "超管";
       }
     },

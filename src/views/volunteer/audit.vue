@@ -3,26 +3,12 @@
     <v-card>
       <v-card-title>
         未审核感想列表
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="搜索"
-          single-line
-          hide-details
-        ></v-text-field>
+        <v-text-field v-model="search" append-icon="mdi-magnify" label="搜索" single-line hide-details></v-text-field>
       </v-card-title>
       <v-card-text>
-        <v-data-table
-          fixed-header
-          :headers="headers"
-          :items="thoughts"
-          :search="search"
-          :loading="$store.state.isLoading"
-          @click:row="rowClick"
-          loading-text="加载中..."
-          no-data-text="没有数据哦"
-          no-results-text="没有结果"
-        >
+        <v-data-table fixed-header :headers="headers" :items="thoughts" :search="search"
+          :loading="$store.state.isLoading" @click:row="rowClick" loading-text="加载中..." no-data-text="没有数据哦"
+          no-results-text="没有结果">
         </v-data-table>
       </v-card-text>
     </v-card>
@@ -33,19 +19,19 @@
           <tbody>
             <tr>
               <td>义工编号</td>
-              <td>{{volid}}</td>
+              <td>{{ volid }}</td>
             </tr>
             <tr>
               <td>义工日期</td>
-              <td>{{volDate}}</td>
+              <td>{{ volDate }}</td>
             </tr>
             <tr>
               <td>义工时间</td>
-              <td>{{volTime}}</td>
+              <td>{{ volTime }}</td>
             </tr>
             <tr>
               <td>义工详细信息</td>
-              <td>{{volDesc}}</td>
+              <td>{{ volDesc }}</td>
             </tr>
             <tr>
               <td>校内时长</td>
@@ -61,11 +47,11 @@
             </tr>
             <tr>
               <td>学号</td>
-              <td>{{stuid}}</td>
+              <td>{{ stuid }}</td>
             </tr>
             <tr>
               <td>感想</td>
-              <td>{{thought}}</td>
+              <td>{{ thought }}</td>
             </tr>
             <tr v-if="pictures">
               <td>图片</td>
@@ -77,55 +63,33 @@
             </tr>
             <tr>
               <td>发放的校内时长（分钟）</td>
-              <td><v-text-field
-                v-model="inside"
-                label="不填为默认值"
-                prepend-icon="mdi-view-list"
-              /></td>
+              <td>
+                <v-text-field v-model="inside" label="不填为默认值" prepend-icon="mdi-view-list" />
+              </td>
             </tr>
             <tr>
               <td>发放的校外时长（分钟）</td>
-              <td><v-text-field
-                v-model="outside"
-                label="不填为默认值"
-                prepend-icon="mdi-view-list"
-              /></td>
+              <td>
+                <v-text-field v-model="outside" label="不填为默认值" prepend-icon="mdi-view-list" />
+              </td>
             </tr>
             <tr>
               <td>发放的大型时长（分钟）</td>
-              <td><v-text-field
-                v-model="large"
-                label="不填为默认值"
-                prepend-icon="mdi-view-list"
-              /></td>
+              <td>
+                <v-text-field v-model="large" label="不填为默认值" prepend-icon="mdi-view-list" />
+              </td>
             </tr>
           </tbody>
         </v-simple-table>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            :disabled="$store.state.isLoading"
-            @click="audit(1)"
-          >通过
+          <v-btn color="primary" :disabled="$store.state.isLoading" @click="audit(1)">通过
           </v-btn>
-          <v-btn
-            color="red"
-            :disabled="$store.state.isLoading"
-            @click="audit(2)"
-          >拒绝
+          <v-btn color="red" :disabled="$store.state.isLoading" @click="audit(2)">拒绝
           </v-btn>
-          <v-btn
-            color="yellow"
-            :disabled="$store.state.isLoading"
-            @click="audit(3)"
-          >打回
+          <v-btn color="yellow" :disabled="$store.state.isLoading" @click="audit(3)">打回
           </v-btn>
-          <v-btn
-            color="primary"
-            :disabled="$store.state.isLoading"
-            @click="dialog1 = false"
-          >取消
+          <v-btn color="primary" :disabled="$store.state.isLoading" @click="dialog1 = false">取消
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -135,9 +99,9 @@
 
 <script>
 import dialogs from "../../utils/dialogs.js";
-import permissions from "../../utils/permissions";
+import { permissionTypes } from "../../utils/permissions";
+import { validate, validateNotNAN, validateNotLargerThan, validateNotNegative } from "../../utils/validation";
 import axios from "axios";
-import zutils from "../../utils/zutils.js";
 
 export default {
   data: () => ({
@@ -167,22 +131,22 @@ export default {
     this.pageload();
   },
   methods: {
-    timeToHint: function (a){
-        let hr = parseInt(a / 60);
-        let mi = parseInt(a % 60);
-        if (hr != 0)
-            if (mi != 0)
-                return hr + " 小时 " + mi + " 分钟";
-            else
-                return hr + " 小时 ";
+    timeToHint: function (a) {
+      let hr = parseInt(a / 60);
+      let mi = parseInt(a % 60);
+      if (hr != 0)
+        if (mi != 0)
+          return hr + " 小时 " + mi + " 分钟";
         else
-            return mi + "分钟";
+          return hr + " 小时 ";
+      else
+        return mi + "分钟";
     },
     async pageload() {
       await zutils.checkToken(this);
       this.$store.commit("loading", true);
       await axios
-        .get("/volunteer/unaudited",{
+        .get("/volunteer/unaudited", {
 
         })
         .then((response) => {
@@ -203,7 +167,7 @@ export default {
       this.$store.commit("loading", false);
     },
     granted: function () {
-      return this.$store.state.info.permission < permissions.teacher;
+      return this.$store.state.info.permission < permissionTypes.teacher;
     },
     rowClick: function (item) {
       this.dialog1 = true;
@@ -213,11 +177,11 @@ export default {
       this.pictures = item.picture;
 
       console.log(this.pictures)
-      
+
       this.$store.commit("loading", true);
       axios
-        .get("/volunteer/fetch/"+this.volid,{
-      
+        .get("/volunteer/fetch/" + this.volid, {
+
         })
         .then((response) => {
           console.log(response.data);
@@ -242,73 +206,63 @@ export default {
       this.$store.commit("loading", false);
     },
     audit: function (status) {
-      dialogs.confirm("",(value)=>{
-          if (value){
-            this.dialog1 = false;
-            if(status==1){
-              if(this.inside==undefined || this.inside=="")
-                this.inside = this.volTI;
-              if(this.outside==undefined || this.outside=="")
-                this.outside = this.volTO;
-              if(this.large==undefined || this.large=="")
-                this.large = this.volTL;
-            }else{
-              this.inside = "0";
-              this.outside = "0";
-              this.large = "0";
-            }
-            console.log(status,this.inside,this.outside,this.large);
-
-            if (isNaN(parseInt(this.inside)) || isNaN(parseInt(this.outside)) || isNaN(parseInt(this.large))) {
-              dialogs.toasts.error("就连幼儿园的小孩子都知道，时间得是数字！！！")
-              return
-            }
-
-            if (this.inside[0] == "-" || this.outside[0] == "-" || this.large[0] == "-") {
-              dialogs.toasts.error("就连幼儿园的小孩子都知道，时间不能是负数！！！")
-              return
-            }
-
-            if (this.inside.length > 4 || this.outside.length > 4 || this.large.length > 4 ) {
-              dialogs.toasts.error("你这数字有点大我忍不下")
-              return
-            }
-
-            this.$store.commit("loading", true);
-            axios
-              .post("/volunteer/audit/"+this.volid,{
-                "thought": [{
-                  "stuId": this.stuid,
-                  "status": status,
-                  "inside": this.inside,
-                  "outside": this.outside,
-                  "large": this.large
-                }]
-              })
-              .then((response) => {
-                  console.log(response.data);
-                  if (response.data.type == "SUCCESS") {
-                    dialogs.toasts.success(response.data.message);
-                    this.volDate = response.data.date;
-                    this.volTime = response.data.time;
-                    this.volDesc = response.data.description;
-                    this.volTI = response.data.inside;
-                    this.volTO = response.data.outside;
-                    this.volTL = response.data.large;
-                  } else {
-                    dialogs.toasts.error(response.data.message);
-                  }
-              })
-              .catch((err) => {
-                dialogs.toasts.error(err);
-              })
-              .finally(() => {
-                this.$store.commit("loading", false);
-              });
-            this.$store.commit("loading", false);
-            // location.reload();
-            this.pageload()
+      dialogs.confirm("", (value) => {
+        if (value) {
+          this.dialog1 = false;
+          if (status == 1) {
+            if (this.inside == undefined || this.inside == "")
+              this.inside = this.volTI;
+            if (this.outside == undefined || this.outside == "")
+              this.outside = this.volTO;
+            if (this.large == undefined || this.large == "")
+              this.large = this.volTL;
+          } else {
+            this.inside = "0";
+            this.outside = "0";
+            this.large = "0";
           }
+
+          validate([this.inside, this.outside, this.large], [
+            validateNotNAN(),
+            validateNotNegative(),
+            validateNotLargerThan(4)
+          ]);
+
+          this.$store.commit("loading", true);
+          axios
+            .post("/volunteer/audit/" + this.volid, {
+              "thought": [{
+                "stuId": this.stuid,
+                "status": status,
+                "inside": this.inside,
+                "outside": this.outside,
+                "large": this.large
+              }]
+            })
+            .then((response) => {
+              console.log(response.data);
+              if (response.data.type == "SUCCESS") {
+                dialogs.toasts.success(response.data.message);
+                this.volDate = response.data.date;
+                this.volTime = response.data.time;
+                this.volDesc = response.data.description;
+                this.volTI = response.data.inside;
+                this.volTO = response.data.outside;
+                this.volTL = response.data.large;
+              } else {
+                dialogs.toasts.error(response.data.message);
+              }
+            })
+            .catch((err) => {
+              dialogs.toasts.error(err);
+            })
+            .finally(() => {
+              this.$store.commit("loading", false);
+            });
+          this.$store.commit("loading", false);
+          // location.reload();
+          this.pageload()
+        }
       });
     }
   },
@@ -324,5 +278,4 @@ export default {
   width: auto;
   height: 120px;
 }
-
 </style>

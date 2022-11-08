@@ -4,73 +4,34 @@
       <v-card-title>义工自提交</v-card-title>
       <v-card-text>
         <v-form>
-          <v-text-field
-            v-model="form.name"
-            :rules="rules"
-            label="义工名称"
-            prepend-icon="mdi-pen"
-          />
-          
-          <v-dialog
-            ref="dateDialog"
-            v-model="modalDate"
-            :return-value.sync="form.date"
-            persistent
-            width="290px"
-          >
+          <v-text-field v-model="form.name" :rules="rules" label="义工名称" prepend-icon="mdi-pen" />
+
+          <v-dialog ref="dateDialog" v-model="modalDate" :return-value.sync="form.date" persistent width="290px">
             <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                v-model="form.date"
-                label="义工日期"
-                :rules="rules"
-                prepend-icon="mdi-calendar"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-              ></v-text-field>
+              <v-text-field v-model="form.date" label="义工日期" :rules="rules" prepend-icon="mdi-calendar" readonly
+                v-bind="attrs" v-on="on"></v-text-field>
             </template>
             <v-date-picker v-model="form.date" scrollable>
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="modalDate = false">
                 取消
               </v-btn>
-              <v-btn
-                text
-                color="primary"
-                @click="$refs.dateDialog.save(form.date)"
-              >
+              <v-btn text color="primary" @click="$refs.dateDialog.save(form.date)">
                 确认
               </v-btn>
             </v-date-picker>
           </v-dialog>
-          <v-dialog
-            ref="timeDialog"
-            v-model="modalTime"
-            :return-value.sync="form.time"
-            persistent
-            width="290px"
-          >
+          <v-dialog ref="timeDialog" v-model="modalTime" :return-value.sync="form.time" persistent width="290px">
             <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                v-model="form.time"
-                label="义工时间"
-                prepend-icon="mdi-clock-time-four-outline"
-                readonly
-                :rules="rules"
-                v-bind="attrs"
-                v-on="on"
-              ></v-text-field>
+              <v-text-field v-model="form.time" label="义工时间" prepend-icon="mdi-clock-time-four-outline" readonly
+                :rules="rules" v-bind="attrs" v-on="on"></v-text-field>
             </template>
             <v-time-picker v-if="modalTime" v-model="form.time" full-width>
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="modalTime = false">
                 取消
               </v-btn>
-              <v-btn
-                text
-                color="primary"
-                @click="$refs.timeDialog.save(form.time)"
-              >
+              <v-btn text color="primary" @click="$refs.timeDialog.save(form.time)">
                 确定
               </v-btn>
             </v-time-picker>
@@ -82,20 +43,10 @@
               <td>删除</td>
             </thead>
             <tbody>
-              <tr
-                v-for="(stuid ,i) in form.stuSelected"
-                :key="i"
-              >
-                <td>{{mp[stuid]}}</td>
+              <tr v-for="(stuid, i) in form.stuSelected" :key="i">
+                <td>{{ mp[stuid] }}</td>
                 <td>
-                  <v-btn
-                    class="mx-2"
-                    fab
-                    dark
-                    x-small
-                    color="primary"
-                    @click="delFromList(i)"
-                  >
+                  <v-btn class="mx-2" fab dark x-small color="primary" @click="delFromList(i)">
                     <v-icon dark>
                       mdi-minus
                     </v-icon>
@@ -104,25 +55,12 @@
               </tr>
               <tr>
                 <td>
-                  <v-select
-                    prepend-icon="mdi-switch"
-                    v-model="stuNew"
-                    label="选定学生"
-                    :items="stulst"
-                    item-text="name"
-                    item-value="id"
-                  >
+                  <v-select prepend-icon="mdi-switch" v-model="stuNew" label="选定学生" :items="stulst" item-text="name"
+                    item-value="id">
                   </v-select>
                 </td>
                 <td>
-                  <v-btn
-                    class="mx-2"
-                    fab
-                    dark
-                    x-small
-                    color="primary"
-                    @click= "addToList"
-                  >
+                  <v-btn class="mx-2" fab dark x-small color="primary" @click="addToList">
                     <v-icon dark>
                       mdi-plus
                     </v-icon>
@@ -131,45 +69,21 @@
               </tr>
             </tbody>
           </v-simple-table>
-          
-          <v-text-field
-            v-model="form.description"
-            :rules="rules"
-            label="义工描述"
-            prepend-icon="mdi-pen"
-          />
-          
-          <v-text-field
-            v-model="form.inside"
-            :rules="rules"
-            label="校内义工时长（分钟）"
-            prepend-icon="mdi-pen"
-          />
-          
-          <v-text-field
-            v-model="form.outside"
-            :rules="rules"
-            label="校外义工时长（分钟）"
-            prepend-icon="mdi-pen"
-          />
 
-          <v-text-field
-            v-model="form.large"
-            :rules="rules"
-            label="大型活动义工时长（分钟）"
-            prepend-icon="mdi-pen"
-          />
+          <v-text-field v-model="form.description" :rules="rules" label="义工描述" prepend-icon="mdi-pen" />
+
+          <v-text-field v-model="form.inside" :rules="rules" label="校内义工时长（分钟）" prepend-icon="mdi-pen" />
+
+          <v-text-field v-model="form.outside" :rules="rules" label="校外义工时长（分钟）" prepend-icon="mdi-pen" />
+
+          <v-text-field v-model="form.large" :rules="rules" label="大型活动义工时长（分钟）" prepend-icon="mdi-pen" />
         </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-            <v-btn
-          text
-          color="primary"
-          @click="submit"
-        >
+        <v-btn text color="primary" @click="submit">
           提交
-            </v-btn>
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -177,7 +91,7 @@
 
 <script>
 import dialogs from "../../utils/dialogs.js";
-import zutils from "../../utils/zutils.js";
+import { fApi } from "./apis";
 import { NOTEMPTY } from "../..//utils/validation.js";
 import axios from "axios";
 
@@ -207,21 +121,21 @@ export default {
     async pageload() {
       this.$store.commit("loading", true);
       await zutils.checkToken(this);
-      await zutils.fetchStudentList(this.$store.state.info.class, (stulst) => {
-        stulst
-          ? (this.stulst = stulst)
-          : dialogs.toasts.error("获取学生列表失败");
-      });
-      for(let i = 0; i < this.stulst.length; i ++)
+      let stulst = await fApi.fetchStudentList(this.$store.state.info.class);
+      stulst
+        ? (this.stulst = stulst)
+        : dialogs.toasts.error("获取学生列表失败");
+
+      for (let i = 0; i < this.stulst.length; i++)
         this.mp[this.stulst[i].id] = this.stulst[i].name;
       this.$store.commit("loading", false);
       console.log(this.stulst);
     },
-    addToList: function (){
+    addToList: function () {
       let flg = false;
       if (this.stuNew == "" || this.stuNew == undefined) flg = true;
-      for (let i in this.form.stuSelected){
-        if (this.form.stuSelected[i] == this.stuNew){
+      for (let i in this.form.stuSelected) {
+        if (this.form.stuSelected[i] == this.stuNew) {
           flg = true;
           break;
         }
@@ -233,17 +147,17 @@ export default {
         dialogs.toasts.error("请不要重复报名");
       this.stuNew = "";
     },
-    delFromList: function(i){
+    delFromList: function (i) {
       this.form.stuSelected.splice(i, 1);
     },
-    submit: function(){
-      if (this.form.stuSelected.length == 0){
+    submit: function () {
+      if (this.form.stuSelected.length == 0) {
         dialogs.toasts.error("报名学生列表为空");
         return;
       }
       this.$store.commit("loading", true);
       axios
-        .post("/volunteer/holiday",{
+        .post("/volunteer/holiday", {
           name: this.form.name,
           date: this.form.date,
           time: this.form.time,

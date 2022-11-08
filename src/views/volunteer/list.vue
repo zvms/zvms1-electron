@@ -42,18 +42,10 @@
     </v-dialog>
     <v-dialog v-model="dialog_participant" max-width="80%">
       <v-card>
-            <v-card-title>报名列表</v-card-title>
+        <v-card-title>报名列表</v-card-title>
         <v-card-text>
-          <v-data-table
-            fixed-header
-            :headers="headers"
-            :items="participantsLst"
-            :search="search"
-            :loading="$store.state.isLoading"
-            loading-text="加载中..."
-            no-data-text="没有数据哦"
-            no-results-text="没有结果"
-          >
+          <v-data-table fixed-header :headers="headers" :items="participantsLst" :search="search"
+            :loading="$store.state.isLoading" loading-text="加载中..." no-data-text="没有数据哦" no-results-text="没有结果">
           </v-data-table>
         </v-card-text>
         <v-card-actions>
@@ -70,20 +62,10 @@
             <td>删除</td>
           </thead>
           <tbody>
-            <tr
-              v-for="(stuid, i) in stulstSelected"
-              :key = "i"
-            >
-              <td>{{mp[stuid]}}</td>
+            <tr v-for="(stuid, i) in stulstSelected" :key="i">
+              <td>{{ mp[stuid] }}</td>
               <td>
-                <v-btn
-                  class="mx-2"
-                  fab
-                  dark
-                  x-small
-                  color="primary"
-                  @click="delFromList(i)"
-                >
+                <v-btn class="mx-2" fab dark x-small color="primary" @click="delFromList(i)">
                   <v-icon dark>
                     mdi-minus
                   </v-icon>
@@ -92,25 +74,12 @@
             </tr>
             <tr>
               <td>
-                <v-select
-                  prepend-icon="mdi-switch"
-                  v-model="stu_new"
-                  label="选定学生"
-                  :items="stulst"
-                  item-text="name"
-                  item-value="id"
-                >
+                <v-select prepend-icon="mdi-switch" v-model="stu_new" label="选定学生" :items="stulst" item-text="name"
+                  item-value="id">
                 </v-select>
               </td>
               <td>
-                <v-btn
-                  class="mx-2"
-                  fab
-                  dark
-                  x-small
-                  color="primary"
-                  @click= "addToList"
-                >
+                <v-btn class="mx-2" fab dark x-small color="primary" @click="addToList">
                   <v-icon dark>
                     mdi-plus
                   </v-icon>
@@ -119,7 +88,7 @@
             </tr>
           </tbody>
         </v-simple-table>
-        <p>当前选中了{{stulstSelected.length}}个学生哦，你可以点击加号添加一个学生</p>
+        <p>当前选中了{{ stulstSelected.length }}个学生哦，你可以点击加号添加一个学生</p>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="red darken-1" text @click="signupVolunteer(volid)">确定</v-btn>
@@ -136,11 +105,7 @@
           <v-card-text>图片（点击图片以删除）</v-card-text>
           <ul v-for="(pic, i) in pictures" :key="i">
             <li>
-              <img :src="'data:image/png;base64,' + pic"
-                class="pic"
-                @click="removePic(i)"
-                style="cursor: pointer"
-              >
+              <img :src="'data:image/png;base64,' + pic" class="pic" @click="removePic(i)" style="cursor: pointer">
             </li>
           </ul>
         </div>
@@ -172,9 +137,9 @@
 
 <script>
 import dialogs from "../../utils/dialogs.js";
-import permissions from "../../utils/permissions";
+import { permissionTypes } from "../../utils/permissions";
 import volinfo from "../../components/volinfo";
-import zutils from "../../utils/zutils.js";
+import { fApi } from "./apis";
 import axios from "axios";
 
 let { ipcRenderer } = window.require('electron')
@@ -189,7 +154,7 @@ export default {
     dialog: false,
     dialog_participant: false,
     dialog1: false,
-    
+
     dialog2: false,
     curVolId: null,
     pictures: [],
@@ -216,27 +181,26 @@ export default {
     async pageload() {
       await zutils.checkToken(this);
       ipcRenderer.send('endflash');
-      this.fetchVol((volworks) => {
-          this.volworks = volworks.sort((a, b) => b.id - a.id);
-          this.$store.commit("lastSeenVol", this.volworks);
-      });
+      let volworks = await this.fetchVol();
+      this.volworks = volworks.sort((a, b) => b.id - a.id);
+      this.$store.commit("lastSeenVol", this.volworks);
     },
     granted: function () {
-      return this.$store.state.info.permission < permissions.teacher;
+      return this.$store.state.info.permission < permissionTypes.teacher;
     },
-    volSignUp: function (volid) {
+    async volSignUp(volid) {
       console.log("SignUp: " + volid);
       this.dialog1 = true;
 
       this.stulst = undefined;
       this.stulstSelected = [];
-      zutils.fetchStudentList(this.$store.state.info.class, (stus) => {
-        stus ? (this.stulst = stus) : (this.stulst = undefined);
-        this.volid = volid;
-        for (let i in this.stulst)
-          this.mp[this.stulst[i].id] = this.stulst[i].name;
-        console.log(this.mp);
-      });
+      let stulst = await fApi.fetchStudentList(this.$store.state.info.class);
+      stulst
+        ? (this.stulst = stulst)
+        : dialogs.toasts.error("获取学生列表失败");
+      this.volid = volid;
+      for (const i in this.stulst)
+        this.mp[this.stulst[i].id] = this.stulst[i].name;
     },
     thoughtSubmitDialog: function (volId) {
       this.dialog2 = true;
@@ -260,7 +224,7 @@ export default {
 
         data = data.split('\n')
         data.shift()
-        
+
         let error = false;
         data.forEach(e => {
           if (error) return
@@ -297,19 +261,50 @@ export default {
       this.thoughts.forEach((e) => {
         console.log(parseInt(e.stuId), e.stuId)
         axios
-        .post("/volunteer/thought/"+this.curVolId,{
-          "thought": [{
-            "stuId": parseInt(e.stuId),
-            "content": e.thought,
-            "pictures": this.pictures
-          }],
+          .post("/volunteer/thought/" + this.curVolId, {
+            "thought": [{
+              "stuId": parseInt(e.stuId),
+              "content": e.thought,
+              "pictures": this.pictures
+            }],
+          })
+          .then((response) => {
+            // console.log(response.data);
+            if (response.data.type == "SUCCESS") {
+              dialogs.toasts.success(response.data.message);
+              // location.reload();
+              this.pageload()
+            } else {
+              dialogs.toasts.error(response.data.message);
+            }
+          })
+          .catch((err) => {
+            dialogs.toasts.error(err);
+          })
+          .finally(() => {
+            this.$store.commit("loading", false);
+          });
+      })
+      this.pictures = []
+      this.thoughts = []
+      this.curVolId = null
+      this.$store.commit("loading", false);
+    },
+    signupVolunteer: function (volid) {
+      if (this.stulstSelected.length == 0) {
+        dialogs.toasts.error("报名列表为空");
+        return;
+      }
+      axios
+        .post("/volunteer/signup/" + volid, {
+          "stulst": this.stulstSelected
         })
         .then((response) => {
           // console.log(response.data);
           if (response.data.type == "SUCCESS") {
             dialogs.toasts.success(response.data.message);
-            // location.reload();
-            this.pageload()
+            for (let k in this.form)
+              this.form[k] = undefined
           } else {
             dialogs.toasts.error(response.data.message);
           }
@@ -320,45 +315,14 @@ export default {
         .finally(() => {
           this.$store.commit("loading", false);
         });
-      })
-      this.pictures = []
-      this.thoughts = []
-      this.curVolId = null
-      this.$store.commit("loading", false);
+      this.dialog1 = false;
     },
-    signupVolunteer: function(volid){
-      if (this.stulstSelected.length == 0){
-        dialogs.toasts.error("报名列表为空");
-        return;
-      }
-      axios
-        .post("/volunteer/signup/"+volid,{
-          "stulst": this.stulstSelected
-        })
-        .then((response) => {
-            // console.log(response.data);
-            if (response.data.type == "SUCCESS") {
-              dialogs.toasts.success(response.data.message);
-              for(let k in this.form)
-                this.form[k] = undefined
-            } else {
-              dialogs.toasts.error(response.data.message);
-            }
-        })
-        .catch((err) => {
-          dialogs.toasts.error(err);
-        })
-        .finally(() => {
-          this.$store.commit("loading", false);
-        });
-        this.dialog1 = false;
-    },
-    participants: function (volid){
+    participants: function (volid) {
       this.dialog_participant = true;
       this.volid = volid;
       this.participantsLst = [];
       axios
-        .get("/volunteer/signerList/"+volid, {
+        .get("/volunteer/signerList/" + volid, {
 
         })
         .then((response) => {
@@ -377,46 +341,36 @@ export default {
           this.$store.commit("loading", false);
         });
     },
-    volDetail: function (volid) {
-      console.log("Detail:" + volid);
+
+    volDetail(volid) {
       this.volid = volid;
       this.dialog = true;
     },
-    fetchVol: function (f) {
-       if (this.granted()) this.fetchCurrentClassVol(f);
-       else this.fetchAllVol(f);
+
+    async fetchVol() {
+      if (this.granted()) return await this.fetchCurrentClassVol();
+      else return await this.fetchAllVol();
     },
-    async fetchCurrentClassVol(f) {
-      this.$store.commit("loading", true);
-      await zutils.fetchClassVolunter(
-        this.$store.state.info.class,
-        (volworks) => {
-          volworks
-            ? f(volworks)
-            : dialogs.toasts.error("获取义工列表失败");
-        }
-      );
-      this.$store.commit("loading", false);
+    async fetchCurrentClassVol() {
+      let volworks = await zutils.fetchClassVolunter(
+        this.$store.state.info.class);
+      if (!volworks) dialogs.toasts.error("获取义工列表失败");
+      return volworks;
     },
-    
-    async fetchAllVol(f) {
-      this.$store.commit("loading", true);
-      await zutils.fetchAllVolunter((volworks) => {
-        volworks
-          ? f(volworks)
-          : dialogs.toasts.error("获取义工列表失败");
-      });
-      this.$store.commit("loading", false);
+    async fetchAllVol() {
+      let volworks = await fApi.fetchAllVolunter();
+      if (!volworks) dialogs.toasts.error("获取义工列表失败");
+      return volworks;
     },
-    
-    addToList: function (){
+
+    addToList: function () {
       // console.log("Ent");
       // console.log(this.stu_new);
       // console.log(this.stulstSelected);
       let flg = false;
       if (this.stu_new == undefined) flg = true;
-      for (let i in this.stulstSelected){
-        if (this.stulstSelected[i] == this.stu_new){
+      for (let i in this.stulstSelected) {
+        if (this.stulstSelected[i] == this.stu_new) {
           flg = true;
           break;
         }
@@ -427,7 +381,7 @@ export default {
         dialogs.toasts.error("请不要重复报名");
       this.stu_new = undefined;
     },
-    delFromList: function(i){
+    delFromList: function (i) {
       this.stulstSelected.splice(i, 1);
     }
   },
@@ -443,5 +397,4 @@ export default {
   width: auto;
   height: 120px;
 }
-
 </style>
