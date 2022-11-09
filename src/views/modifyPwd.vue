@@ -36,7 +36,7 @@
 <script>
 import dialogs from "../utils/dialogs";
 import axios from "axios";
-import { fApi } from "./apis";
+import {checkToken} from "../apis"
 
 var md5=require('md5-node');
 export default {
@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     pageload: async function(){
-      await zutils.checkToken(this);
+      await checkToken(this);
     },
     modifyPwd: function(){
       if (this.pwd_new != this.pwd_conf){

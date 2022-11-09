@@ -71,7 +71,7 @@
 </style>
 
 <script>
-import { fApi } from "./apis";
+import { fApi, checkToken } from "./apis";
 import dialogs from "./utils/dialogs.js";
 import { permissionTypes } from "./utils/permissions.js";
 import storeSaver from "./utils/storeSaver.js";
@@ -137,7 +137,7 @@ export default {
       }
 
       storeSaver.saveState(this);
-      await zutils.checkToken(t);
+      await checkToken(t);
       await t.fetchVol();
       t.$store.commit('notices', await fApi.fetchNotices())
       let flag = false;

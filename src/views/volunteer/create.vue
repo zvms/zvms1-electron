@@ -92,8 +92,9 @@
 
 <script>
 import dialogs from "../../utils/dialogs";
-import { fApi } from "../../apis";
+import { fApi, checkToken } from "../../apis";
 import { NOTEMPTY } from "../..//utils/validation.js";
+import axios from "axios";
 
 export default {
   data: () => ({
@@ -124,7 +125,7 @@ export default {
   methods: {
     async pageload() {
       this.$store.commit("loading", true);
-      await zutils.checkToken(this);
+      await checkToken(this);
       let classes = await fApi.fetchClassList();
       classes
         ? (this.classes = classes)
@@ -178,7 +179,7 @@ export default {
 
               const d = new Date();
               this.classSelected.forEach(async (i) => {
-                await zutils.sendNotice(
+                await fApi.sendNotice(
                   [i.id],
                   `新的义工：${this.form.name}（限报人数：${i.stuMax}）`,
                   d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + (d.getDate() + 2),

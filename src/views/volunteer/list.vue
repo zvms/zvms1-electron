@@ -139,7 +139,7 @@
 import dialogs from "../../utils/dialogs.js";
 import { permissionTypes } from "../../utils/permissions";
 import volinfo from "../../components/volinfo";
-import { fApi } from "./apis";
+import { fApi, checkToken } from "../../apis";
 import axios from "axios";
 
 let { ipcRenderer } = window.require('electron')
@@ -179,7 +179,7 @@ export default {
   },
   methods: {
     async pageload() {
-      await zutils.checkToken(this);
+      await checkToken(this);
       ipcRenderer.send('endflash');
       let volworks = await this.fetchVol();
       this.volworks = volworks.sort((a, b) => b.id - a.id);
@@ -210,14 +210,14 @@ export default {
       this.pictures.splice(i, 1)
     },
     choosePictures: function () {
-      zutils.openPictures((data) => {
+      fApi.openPictures((data) => {
         if (data === null) return;
 
         this.pictures.push(data)
       })
     },
     chooseCSV: function () {
-      zutils.openCSV((data) => {
+      fApi.openCSV((data) => {
         if (data === null) return;
 
         this.thoughts = []
@@ -317,29 +317,11 @@ export default {
         });
       this.dialog1 = false;
     },
-    participants: function (volid) {
+
+    participants: async function (volid) {
       this.dialog_participant = true;
       this.volid = volid;
-      this.participantsLst = [];
-      axios
-        .get("/volunteer/signerList/" + volid, {
-
-        })
-        .then((response) => {
-          console.log(response.data);
-          if (response.data.type == "SUCCESS") {
-            dialogs.toasts.success(response.data.message);
-            this.participantsLst = response.data.result;
-          } else {
-            dialogs.toasts.error(response.data.message);
-          }
-        })
-        .catch((err) => {
-          dialogs.toasts.error(err);
-        })
-        .finally(() => {
-          this.$store.commit("loading", false);
-        });
+      this.participantsLst = await fApi.fetchSignerList(volid);
     },
 
     volDetail(volid) {
@@ -352,8 +334,7 @@ export default {
       else return await this.fetchAllVol();
     },
     async fetchCurrentClassVol() {
-      let volworks = await zutils.fetchClassVolunter(
-        this.$store.state.info.class);
+      let volworks = await fApi.fetchClassVolunter(this.$store.state.info.class);
       if (!volworks) dialogs.toasts.error("获取义工列表失败");
       return volworks;
     },

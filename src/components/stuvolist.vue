@@ -1,33 +1,18 @@
 <template>
   <v-card flat>
-    <v-card-title
-      ><div class="headline">{{title}} 义工列表</div>
+    <v-card-title>
+      <div class="headline">{{ title }} 义工列表</div>
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="搜索"
-        single-line
-        hide-details
-      ></v-text-field>
+      <v-text-field v-model="search" append-icon="mdi-magnify" label="搜索" single-line hide-details></v-text-field>
     </v-card-title>
     <v-card-text>
-      <v-data-table
-        fixed-header
-        :headers="headers"
-        :items="volworks"
-        :search="search"
-        :loading="$store.state.isLoading"
-        @click:row="rowClick"
-        loading-text="加载中..."
-        no-data-text="没有数据哦"
-        no-results-text="没有结果"
-      >
+      <v-data-table fixed-header :headers="headers" :items="volworks" :search="search" :loading="$store.state.isLoading"
+        @click:row="rowClick" loading-text="加载中..." no-data-text="没有数据哦" no-results-text="没有结果">
       </v-data-table>
     </v-card-text>
     <v-dialog v-model="dialog" max-width="80%">
       <v-card>
-        <volcert :volid="volid" :stuid="stuid" :stuname="stuname"/>
+        <volcert :volid="volid" :stuid="stuid" :stuname="stuname" />
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="red darken-1" text @click="dialog = false">关闭</v-btn>
@@ -38,9 +23,8 @@
 </template>
 
 <script>
-import dialogs from "../utils/dialogs";
+import { fApi } from "../apis";
 import volcert from "./volcert.vue";
-import axios from "axios";
 
 export default {
   name: "stuvolist",
@@ -68,43 +52,23 @@ export default {
     this.init();
   },
   methods: {
-    timeToHint: function (a){
-        let hr = parseInt(a / 60);
-        let mi = parseInt(a % 60);
-        if (hr != 0)
-            if (mi != 0)
-                return hr + " 小时 " + mi + " 分钟";
-            else
-                return hr + " 小时 ";
+    timeToHint: function (a) {
+      let hr = parseInt(a / 60);
+      let mi = parseInt(a % 60);
+      if (hr != 0)
+        if (mi != 0)
+          return hr + " 小时 " + mi + " 分钟";
         else
-            return mi + "分钟";
+          return hr + " 小时 ";
+      else
+        return mi + "分钟";
     },
-    init: function () {
+    init: async function () {
       this.volworks = undefined;
       this.stuid = this.userid;
       if (this.userid != 0 && this.userid != undefined) {
-        this.$store.commit("loading", true);
-        axios
-          .get("/student/volbook/" + this.userid)
-          .then((response) => {
-            if (response.data.type == "ERROR") {
-              if (response.data.message != "该学生没有义工记录")
-                dialogs.toasts.error(response.data.message);
-            } else if (response.data.type == "SUCCESS") {
-              this.volworks = response.data.rec;
-              for (let i in this.volworks){
-                this.volworks[i].inside = this.timeToHint(this.volworks[i].inside);
-                this.volworks[i].outside = this.timeToHint(this.volworks[i].outside);
-                this.volworks[i].large = this.timeToHint(this.volworks[i].large);
-              }
-            } else dialogs.toasts.error("未知错误");
-          })
-          .catch((error) => {
-            dialogs.toasts.error(error);
-          })
-          .finally(() => {
-            this.$store.commit("loading", false);
-          });
+
+        this.volworks = fApi.fetchVolbook(this.userid);
       }
     },
     rowClick: function (item) {

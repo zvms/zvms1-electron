@@ -1,12 +1,39 @@
 import Axios from "axios"
-import storeSaver from "./storeSaver.js";
-import isTimeFinished from "../utils/calc.js";
+import storeSaver from "../utils/storeSaver.js";
+import { isTimeFinished } from "../utils/calc.js";
 import { permissionTypes } from "../utils/permissions.js";
+import store from "../utils/store";
+import { applyNavItems } from "../utils/nav.js";
 
 let { ipcRenderer } = window.require('electron');
 
 
-export async function checkToken() {
+Axios.defaults.baseURL = "http://172.31.2.3:5000";
+// Axios.defaults.baseURL = "http://localhost:5000";
+
+//Axios携带cookie
+Axios.defaults.withCredentials = true;
+//post设定，自动序列化表单的json数据
+Axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+//如果要把表单数据转化为url格式就去掉注释
+// Axios.defaults.transformRequest = [function (data){
+//     data = qs.stringify(data);
+//     return data;
+// }]
+Axios.interceptors.request.use(
+    config => {
+        config.params = {
+            ...config.params,
+            timestamp: Date.now()
+        };
+        config.headers.Authorization = store.state.token || '';
+        return config
+    },
+    error => Promise.reject(error)
+);
+
+
+export async function checkToken(/*unknown_arg x1 */) {
     try {
         let res = await Axios.post("/user/info");
         if (res.data.type != "SUCCESS") {
@@ -19,14 +46,14 @@ export async function checkToken() {
 
 export async function logout() {
     let res = await this.post("/user/logout");
-    setDrawers(permissionTypes.none);
+    applyNavItems(permissionTypes.none);
     ipcRenderer.send('flash');
-    con.$store.commit("token", undefined);
-    con.$store.commit("login", false);
-    con.$store.commit("loading", false);
-    con.$store.commit("lastSeenVol", []);
-    storeSaver.saveState(con);
-    con.$router.push("/login").catch(() => { });
+    store.commit("token", undefined);
+    store.commit("login", false);
+    store.commit("loading", false);
+    store.commit("lastSeenVol", []);
+    storeSaver.saveState(store);
+    //store.$router.push("/login").catch(() => { });
     return res;
 }
 
@@ -47,11 +74,11 @@ export class Api {
 
     async doRequest(func, ...args) {
         let cid = this._id++;
-        this.beforeRequest(cid, url);
+        this.beforeRequest(cid, ...args);
         let res = await func(...args).catch(
             this.onError
         ).finally(
-            this.afterRequest(cid)
+            this.afterRequest(cid, ...args)
         );
         if (res.data.type !== "SUCCESS") {
             this.onError(res.data.message);
@@ -75,10 +102,10 @@ export class Api {
     async fetchStudentList(classid) {
         let res = await this.get("/class/stulist/" + classid);
 
-        for (stu in res.data.student) {
+        for (let stu in res.data.student) {
             stu.finished = isTimeFinished(stu.id, stu.time) ? "是" : "否";
         }
-        return stus;
+        return res.data.student;
     }
 
     async fetchClassVolunter(classid) {
@@ -90,6 +117,41 @@ export class Api {
     async fetchAllVolunter() {
         let res = await this.get("/volunteer/list")
         return res.data.volunteer
+    }
+
+    async fetchOneVolunteer(id) {
+        let res = await this.get("/volunteer/fetch/" + id)
+        return res.data;
+    }
+
+    async fetchUnauditedVolunteers() {
+        let res = await this.get("/volunteer/unaudited")
+        return res.data;
+    }
+
+    async fetchSignerList(volid) {
+        let res = await this.get("/volunteer/signerList/" + volid,)
+        return res.data.result;
+    }
+
+    async fetchVolbook(id) {
+        let res = await this.get("/student/volbook/" + id)
+
+        //     if (response.data.message != "该学生没有义工记录")
+        //       dialogs.toasts.error(response.data.message);
+        //   } TODO
+
+        let volworks = res.data.rec.map(v => ({
+            inside: this.timeToHint(v.inside),
+            outside: this.timeToHint(v.outside),
+            large: this.timeToHint(v.large),
+        }));
+        return volworks;
+    }
+
+    async fetchNothoughtList(cls) {
+        let res = await this.get("/class/noThought/" + cls)
+        return res.data.result;
     }
 
     async openPictures(callback) {
@@ -126,12 +188,12 @@ export class Api {
 
 export const fApi = new Api(
     () => {
-
+        //dialogs.toasts.error(response.data.message);
     },
     () => {
-        this.$store.commit("incLoading");
+        store.commit("incLoading");
     },
     () => {
-        this.$store.commit("decLoading");
+        store.commit("decLoading");
     }
 )

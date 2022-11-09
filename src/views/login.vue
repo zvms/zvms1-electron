@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { fApi } from "../apis"
+import { fApi,checkToken } from "../apis"
 import dialogs from "../utils/dialogs.js"; //弹出toast提示用
 import { NOTEMPTY } from "../utils/validation.js"; //校验表单完整性
 import axios from "axios"; //ajax网络库
@@ -45,7 +45,7 @@ export default {
   mounted: async function () {
     await storeSaver.loadState(this, (t) => {
       t.$router.push("/me");
-      zutils.checkToken(this);
+      checkToken(this);
     });
   },
   methods: {

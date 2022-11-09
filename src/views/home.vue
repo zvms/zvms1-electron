@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { fApi } from "../apis";
+import {checkToken } from "../apis";
 export default {
   name: "home",
   mounted: function () {
@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     pageload: async function(){
-      await zutils.checkToken(this.$store);
+      await checkToken(this.$store);
       this.$router.push("/me");
     }
   },

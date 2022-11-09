@@ -15,7 +15,7 @@
 
 <script>
 import dialogs from "../../utils/dialogs";
-import { fApi } from "./apis";
+import { fApi, checkToken } from "../../apis";
 import { permissionTypes } from "../../utils/permissions";
 
 export default {
@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     async pageload() {
-      await zutils.checkToken(this);
+      await checkToken(this);
       let classes = await fApi.fetchClassList()
       classes
         ? (this.classes = classes)

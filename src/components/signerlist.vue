@@ -47,8 +47,8 @@
 </template>
 
 <script>
+import { fApi } from "../apis";
 import dialogs from "../utils/dialogs";
-import axios from "axios";
 
 export default {
   name: "volinfo",
@@ -73,36 +73,20 @@ export default {
     this.init();
   },
   methods: {
-    timeToHint: function (a){
-        let hr = parseInt(a / 60);
-        let mi = parseInt(a % 60);
-        if (hr != 0)
-            if (mi != 0)
-                return hr + " 小时 " + mi + " 分钟";
-            else
-                return hr + " 小时 ";
+    timeToHint: function (a) {
+      let hr = parseInt(a / 60);
+      let mi = parseInt(a % 60);
+      if (hr != 0)
+        if (mi != 0)
+          return hr + " 小时 " + mi + " 分钟";
         else
-            return mi + "分钟";
+          return hr + " 小时 ";
+      else
+        return mi + "分钟";
     },
-    init: function () {
+    init: async function () {
       if (this.volid != 0 && this.volid != undefined) {
-        this.$store.commit("loading", true);
-        axios
-          .get("/volunteer/fetch/" + this.volid)
-          .then((response) => {
-            console.log(response.data);
-            if (response.data.type == "ERROR")
-              dialogs.toasts.error(response.data.message);
-            else if (response.data.type == "SUCCESS") {
-              this.vol = response.data;
-            } else dialogs.toasts.error("未知错误");
-          })
-          .catch((error) => {
-            dialogs.toasts.error(error);
-          })
-          .finally(() => {
-            this.$store.commit("loading", false);
-          });
+        this.vol = await fApi.fetchOneVolunteer(this.volid);
       }
     },
     fetch: function () {

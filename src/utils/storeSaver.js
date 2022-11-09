@@ -31,7 +31,7 @@ export default {
             con.$store.commit("token", JSON.parse(arg.data).token);
             con.$store.commit("info", JSON.parse(arg.data).info);
             con.$store.commit("login", JSON.parse(arg.data).isLogined);
-            applyNavItems(????)//con.$store.commit("draweritems", JSON.parse(arg.data).draweritems);
+            //applyNavItems(????)//con.$store.commit("draweritems", JSON.parse(arg.data).draweritems);
             con.$store.commit("lastSeenVol", JSON.parse(arg.data).lastSeenVol);
             f(con);
             // console.log(con.$store);

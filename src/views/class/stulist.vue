@@ -40,11 +40,9 @@
 </template>
 
 <script>
-import axios from "axios";
-import dialogs from "../../utils/dialogs.js";
 import { permissionTypes } from "../../utils/permissions.js";
 import stuvolist from "../../components/stuvolist";
-import { fApi } from "./apis";
+import { fApi, checkToken } from "../../apis";
 
 export default {
   data: () => ({
@@ -87,40 +85,26 @@ export default {
     },
     async pageload() {
       this.$store.commit("loading", true);
-      await zutils.checkToken(this);
-      axios
-        .get("/class/list")
-        .then((response) => {
-          if (response.data.type == "ERROR") {
-            dialogs.toasts.error(response.data.message);
-          } else if (response.data.type == "SUCCESS") {
-            this.classes = response.data.class;
-            this.nowclass = this.$store.state.info.class;
-            this.nowclassname = this.$store.state.info.classname;
+      await checkToken(this);
+      this.classes = await fApi.fetchClassList();
+      this.nowclass = this.$store.state.info.class;
+      this.nowclassname = this.$store.state.info.classname;
 
-            if (this.$store.state.info.permission > permissionTypes.secretary) {
-              this.menudisabled = false;
-              this.tipText = "点击选择班级";
-              if (this.$route.params != undefined) {
-                this.nowclass = this.$route.params.classid;
-                this.nowclassname = this.classid2name(this.nowclass);
-              }
-            }
-          } else dialogs.toasts.error("未知错误");
-        })
-        .catch((error) => {
-          dialogs.toasts.error(error);
-        })
-        .finally(() => {
-          this.$store.commit("loading", false);
-          //对团支书以上等级加入特殊判断防止报错
-          if (
-            this.$store.state.info.permission > permissionTypes.secretary &&
-            this.$route.params.classid <= 200000
-          )
-            this.nowclassname = "点击选择班级";
-          else this.fetchstulist();
-        });
+      if (this.$store.state.info.permission > permissionTypes.secretary) {
+        this.menudisabled = false;
+        this.tipText = "点击选择班级";
+        if (this.$route.params != undefined) {
+          this.nowclass = this.$route.params.classid;
+          this.nowclassname = this.classid2name(this.nowclass);
+        }
+      }
+      if (
+        this.$store.state.info.permission > permissionTypes.secretary &&
+        this.$route.params.classid <= 200000
+      )
+        this.nowclassname = "点击选择班级";
+      else this.fetchstulist();
+
     },
 
     fetchstulist: async function () {

@@ -91,8 +91,8 @@
 
 <script>
 import dialogs from "../../utils/dialogs.js";
-import { fApi } from "./apis";
-import { NOTEMPTY } from "../..//utils/validation.js";
+import { fApi, checkToken } from "../../apis";
+import { NOTEMPTY } from "../../utils/validation.js";
 import axios from "axios";
 
 export default {
@@ -119,17 +119,13 @@ export default {
   },
   methods: {
     async pageload() {
-      this.$store.commit("loading", true);
-      await zutils.checkToken(this);
+      await checkToken(this);
       let stulst = await fApi.fetchStudentList(this.$store.state.info.class);
       stulst
         ? (this.stulst = stulst)
         : dialogs.toasts.error("获取学生列表失败");
-
       for (let i = 0; i < this.stulst.length; i++)
         this.mp[this.stulst[i].id] = this.stulst[i].name;
-      this.$store.commit("loading", false);
-      console.log(this.stulst);
     },
     addToList: function () {
       let flg = false;

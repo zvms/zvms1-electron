@@ -73,10 +73,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import dialogs from "../utils/dialogs";
-import {permissionTypes} from "../utils/permissions";
-import zutils from "../utils/zutils";
+import {fApi, checkToken} from "../apis";
+import {permissionNames} from "../utils/permissions";
 
 export default {
   name: "me",
@@ -99,52 +97,21 @@ export default {
   },
   methods: {
     pageload: async function () {
-      await zutils.checkToken(this.$store);
+      await checkToken(this.$store);
     },
     initChips: function () {
       this.chips = [
         {
           id: 1,
           icon: "mdi-label",
-          content: this.permission2str(this.$store.state.info.permission),
+          content: permissionNames[this.$store.state.info.permission],
         },
         { id: 2, icon: "mdi-label", content: this.$store.state.info.classname },
         { id: 3, icon: "mdi-label", content: this.$store.state.info.class },
       ];
     },
     randomThought: function () {
-      this.$store.commit("loading", true);
-      axios
-        .get("/volunteer/randomThought")
-        .then((response) => {
-          if (response.data.type == "SUCCESS") {
-            this.thought.stuName = response.data.stuName;
-            this.thought.stuId = response.data.stuId;
-            this.thought.content = response.data.content;
-          } else if (response.data.type == "ERROR") {
-            dialogs.toasts.error(response.data.message);
-          }
-        })
-        .catch((error) => {
-          dialogs.toasts.error(error);
-        })
-        .finally(() => {
-          this.$store.commit("loading", false);
-        });
-    },
-    permission2str: function (per) {
-      switch (per) {
-        case permissionTypes.secretary:
-          return "团支书";
-        case permissionTypes.teacher:
-          return "教师";
-        case permissionTypes.admin:
-          return "管理员";
-        case permissionTypes.system:
-          return "系统";
-        case permissionTypes._super:
-          return "超管";
-      }
+      this.thought  =fApi.fetchRandomThought();
     },
     showNotice(notice) {
       this.dialog = true;

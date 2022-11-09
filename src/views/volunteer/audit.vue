@@ -102,6 +102,7 @@ import dialogs from "../../utils/dialogs.js";
 import { permissionTypes } from "../../utils/permissions";
 import { validate, validateNotNAN, validateNotLargerThan, validateNotNegative } from "../../utils/validation";
 import axios from "axios";
+import { fApi, checkToken } from "../../apis";
 
 export default {
   data: () => ({
@@ -143,33 +144,13 @@ export default {
         return mi + "分钟";
     },
     async pageload() {
-      await zutils.checkToken(this);
-      this.$store.commit("loading", true);
-      await axios
-        .get("/volunteer/unaudited", {
-
-        })
-        .then((response) => {
-          console.log(response.data);
-          if (response.data.type == "SUCCESS") {
-            dialogs.toasts.success(response.data.message);
-            this.thoughts = response.data.result;
-          } else {
-            dialogs.toasts.error(response.data.message);
-          }
-        })
-        .catch((err) => {
-          dialogs.toasts.error(err);
-        })
-        .finally(() => {
-          this.$store.commit("loading", false);
-        });
-      this.$store.commit("loading", false);
+      await checkToken(this);
+      this.thoughts = await fApi.fetchUnauditedVolunteers();
     },
     granted: function () {
       return this.$store.state.info.permission < permissionTypes.teacher;
     },
-    rowClick: function (item) {
+    rowClick: async function (item) {
       this.dialog1 = true;
       this.volid = item.volId;
       this.stuid = item.stuId;
@@ -178,32 +159,14 @@ export default {
 
       console.log(this.pictures)
 
-      this.$store.commit("loading", true);
-      axios
-        .get("/volunteer/fetch/" + this.volid, {
-
-        })
-        .then((response) => {
-          console.log(response.data);
-          if (response.data.type == "SUCCESS") {
-            dialogs.toasts.success(response.data.message);
-            this.volDate = response.data.date;
-            this.volTime = response.data.time;
-            this.volDesc = response.data.description;
-            this.volTI = response.data.inside;
-            this.volTO = response.data.outside;
-            this.volTL = response.data.large;
-          } else {
-            dialogs.toasts.error(response.data.message);
-          }
-        })
-        .catch((err) => {
-          dialogs.toasts.error(err);
-        })
-        .finally(() => {
-          this.$store.commit("loading", false);
-        });
-      this.$store.commit("loading", false);
+      let vol = await fApi.fetchOneVolunteer(this.volid);
+      dialogs.toasts.success(vol.message);//TODO
+      this.volDate = vol.date;
+      this.volTime = vol.time;
+      this.volDesc = vol.description;
+      this.volTI = vol.inside;
+      this.volTO = vol.outside;
+      this.volTL = vol.large;
     },
     audit: function (status) {
       dialogs.confirm("", (value) => {
@@ -257,6 +220,10 @@ export default {
               dialogs.toasts.error(err);
             })
             .finally(() => {
+              this.inside = undefined
+              this.outside = undefined
+              this.large = undefined
+              
               this.$store.commit("loading", false);
             });
           this.$store.commit("loading", false);

@@ -62,7 +62,7 @@
 
 <script>
 import dialogs from "../utils/dialogs";
-import { fApi } from "../apis";
+import { fApi, checkToken } from "../apis";
 import { NOTEMPTY } from "../utils/validation";
 
 export default {
@@ -84,7 +84,7 @@ export default {
     },
     methods: {
         async pageload() {
-            await zutils.checkToken(this);
+            await checkToken(this);
             let users = await fApi.fetchClassList();
             users
                 ? (this.users = users)
@@ -124,7 +124,7 @@ export default {
 
             this.$store.commit("loading", true);
 
-            zutils.sendNotice(
+            fApi.sendNotice(
                 this.userSelected,
                 this.form.title,
                 this.form.date,
