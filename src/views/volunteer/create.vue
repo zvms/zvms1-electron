@@ -115,7 +115,7 @@ export default {
       large: undefined,
       class: undefined,
     },
-    rules: [NOTEMPTY()],
+    rules: [NOTEMPTY],
     mp: {}
   }),
   components: {},

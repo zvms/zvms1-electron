@@ -141,8 +141,9 @@ import { permissionTypes } from "../../utils/permissions";
 import volinfo from "../../components/volinfo";
 import { fApi, checkToken } from "../../apis";
 import axios from "axios";
+import { getIpcRenderer } from "../../dev";
 
-let { ipcRenderer } = window.require('electron')
+let ipcRenderer = getIpcRenderer();
 export default {
   data: () => ({
     search: "",

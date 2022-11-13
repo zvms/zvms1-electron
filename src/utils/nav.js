@@ -1,113 +1,89 @@
 import { permissionTypes } from "./permissions"
-import store from "./store";
 
-const navItems = {
-    get me() {
-        return {
+
+export function getNavItems(permission, store) {
+    let navItems = {
+        me: {
             title: "我的",
             to: "/me",
             icon: "mdi-account-circle"
-        }
-    },
-    get modifyPwd() {
-        return {
+        },
+        modifyPwd: {
             title: "修改密码",
             to: "/modifyPwd",
             icon: "mdi-lock"
-        }
-    },
-    get classList() {
-        return {
+        },
+        classList: {
             title: "班级列表",
             to: "/class/list",
             icon: "mdi-view-list",
-        }
-    },
-    get stuList() {
-        return {
+        },
+        stuList: {
             title: "学生列表",
-            to: "/class/stulist/" + store.info.class,
+            to: "/class/stulist/" + (store === undefined ? "" : store.info.class),
             icon: "mdi-format-list-bulleted-square",
-        }
-    },
-    get volList() {
-        return {
+        },
+        volList: {
             title: "义工列表",
             to: "/volunteer/list",
             icon: "mdi-format-list-text",
-        }
-    },
-    get notice() {
-        return {
+        },
+        notice: {
             title: "创建通知",
             to: "/notice",
             icon: "mdi-message-draw",
-        }
-    },
-    get createVol() {
-        return {
+        },
+        createVol: {
             title: "创建义工",
             to: "/volunteer/create",
             icon: "mdi-folder-multiple-plus",
-        }
-    },
-    get auditVol() {
-        return {
+        },
+        auditVol: {
             title: "审核感想",
             to: "/volunteer/audit",
             icon: "mdi-check-circle",
-        }
-    },
-    get holidayVol() {
-        return {
+        },
+        holidayVol: {
             title: "义工自提交",
             to: "/volunteer/holiday",
             icon: "mdi-cloud-upload",
-        }
-    },
-    get uploadThought() {
-        return {
+        },
+        uploadThought: {
             title: "感想提交",
             to: "/volunteer/thought",
             icon: "mdi-upload",
-        }
-    },
-    get report() {
-        return {
+        },
+        report: {
             title: "反馈错误",
             to: "/report",
             icon: "mdi-alert",
-        }
-    },
-    get about() {
-        return {
+        },
+        about: {
             title: "关于我们",
             to: "/about",
             icon: "mdi-help-circle",
-        }
-    },
-    get logout() {
-        return {
+        },
+        logout: {
             title: "登出",
             to: "/logout",
             icon: "mdi-exit-to-app",
-        }
-    }
-};
+        },
+    };
 
-export { navItems };
-
-export function getNavItems(permission) {
     let items = [];
-    items.push(navItems.me);
-    items.push(navItems.modifyPwd);
+    if (permission >= permissionTypes.logined) {
+        items.push(navItems.me);
+        items.push(navItems.modifyPwd);
+    }
     if (permission >= permissionTypes.teacher) {
         items.push(navItems.classList);
     }
     if (permission >= permissionTypes.secretary) {
         items.push(navItems.stuList);
     }
-    items.push(navItems.volList);
+    if (permission >= permissionTypes.secretary) {
+        items.push(navItems.volList);
+    }
     if (permission >= permissionTypes.teacher) {
         items.push(navItems.notice);
     }
@@ -124,9 +100,11 @@ export function getNavItems(permission) {
     items.push(navItems.report);
     items.push(navItems.about);
     items.push(navItems.logout);
+
+    console.log(permission, items);
     return items;
 }
 
-export function applyNavItems(permission) {
-    return store.commit("draweritems", getNavItems(permission));
+export function applyNavItems(permission, store) {
+    return store.commit("draweritems", getNavItems(permission, store));
 }

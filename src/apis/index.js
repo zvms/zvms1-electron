@@ -1,16 +1,14 @@
-import Axios from "axios"
 import storeSaver from "../utils/storeSaver.js";
 import { isTimeFinished } from "../utils/calc.js";
 import { permissionTypes } from "../utils/permissions.js";
 import store from "../utils/store";
 import { applyNavItems } from "../utils/nav.js";
+import { getIpcRenderer, baseURL } from "../dev";
+import Axios from "axios";
 
-let { ipcRenderer } = window.require('electron');
+let ipcRenderer = getIpcRenderer();
 
-
-Axios.defaults.baseURL = "http://172.31.2.3:5000";
-// Axios.defaults.baseURL = "http://localhost:5000";
-
+Axios.defaults.baseURL = baseURL;
 //Axios携带cookie
 Axios.defaults.withCredentials = true;
 //post设定，自动序列化表单的json数据
@@ -184,6 +182,9 @@ export class Api {
         return res.data
     }
 
+    async sendReport(msg){
+msg;
+    }
 }
 
 export const fApi = new Api(

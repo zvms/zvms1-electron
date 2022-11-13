@@ -112,7 +112,7 @@ export default {
       outside: undefined,
       large: undefined
     },
-    rules: [NOTEMPTY()]
+    rules: [NOTEMPTY]
   }),
   mounted: function () {
     this.pageload();

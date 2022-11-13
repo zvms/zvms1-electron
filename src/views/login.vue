@@ -24,8 +24,9 @@ import { NOTEMPTY } from "../utils/validation.js"; //校验表单完整性
 import axios from "axios"; //ajax网络库
 import { applyNavItems } from "../utils/nav";
 import storeSaver from "../utils/storeSaver.js";
+import { getIpcRenderer } from "../dev";
 
-let { ipcRenderer } = window.require('electron')
+let ipcRenderer = getIpcRenderer();
 
 var md5 = require('md5-node');
 var current_version = "51141167bd8394d8da590fddaeb3d91e";
@@ -39,7 +40,7 @@ export default {
       userid: undefined,
       password: undefined,
     },
-    rules: [NOTEMPTY()], //表单校验规则
+    rules: [NOTEMPTY], //表单校验规则
     winheight: document.documentElement.clientHeight - 100, //一个比较失败的自动调整大小
   }),
   mounted: async function () {

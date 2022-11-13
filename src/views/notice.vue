@@ -77,7 +77,7 @@ export default {
         userSelected: [],
         mp: {},
         modalDate: false,
-        rules: [NOTEMPTY()]
+        rules: [NOTEMPTY]
     }),
     mounted: function () {
         this.pageload()

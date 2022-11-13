@@ -1,10 +1,11 @@
 export const permissionTypes = {
-    none:-1,
-    secretary: 0,
-    teacher: 1,
-    admin: 2,
-    _super: 4,
-    system: 3
+    none:0,
+    logined:1,
+    secretary: 2,
+    teacher: 3,
+    admin: 4,
+    _super: 5,
+    system: 6
 }
 
 export const permissionNames = {

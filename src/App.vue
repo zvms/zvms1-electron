@@ -75,8 +75,10 @@ import { fApi, checkToken } from "./apis";
 import dialogs from "./utils/dialogs.js";
 import { permissionTypes } from "./utils/permissions.js";
 import storeSaver from "./utils/storeSaver.js";
+import { getIpcRenderer } from "./dev";
 
-let { ipcRenderer } = window.require('electron')
+let ipcRenderer = getIpcRenderer();
+
 export default {
   name: "App",
 

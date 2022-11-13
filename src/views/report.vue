@@ -31,16 +31,17 @@ export default {
   name: "report",
   data: () => ({
     report: undefined,
-    rules: [NOTEMPTY()]
+    rules: [NOTEMPTY]
   }),
   mounted: function () {
     this.pageload();
   },
   methods: {
     pageload: function(){
-      console.log(233);
     },
     submitReport: function(){
+      this.$store.commit("incLoading");
+      console.log(this.report)
       axios
         .post("/report",{
           "report": this.report
@@ -59,7 +60,7 @@ export default {
           dialogs.toasts.error(err);
         })
         .finally(() => {
-          this.$store.commit("loading", false);
+          this.$store.commit("decLoading");
         });
     }
   },

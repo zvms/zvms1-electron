@@ -11,7 +11,7 @@ export default new Vuex.Store({
     state: {
         notices: undefined,
         isLogined: false,
-        isLoading: 0,
+        loadingNum: 0,
         token: undefined,
         info: {
             username: undefined,
@@ -26,10 +26,13 @@ export default new Vuex.Store({
     //传值操作
     mutations: {
         incLoading: (state) => {
-            state.isLoading++;
+            state.loadingNum++;
         },
         decLoading: (state) => {
-            state.isLoading--;
+            if(state.loadingNum<=0){
+                throw new Error("Cannot decrease loadingNum: loadingNum<=0");
+            }
+            state.loadingNum--;
         },
         info: (state, payload) => {
             state.info = payload
@@ -50,5 +53,12 @@ export default new Vuex.Store({
             state.notices = payload
         }
     },
+
+    getters:{
+        isLoading(state){
+            return state.loadingNum>0;
+        }
+    },
+
     plugins: [createPersistedState()]
 });
