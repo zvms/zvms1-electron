@@ -62,7 +62,7 @@
 
 <script>
 import dialogs from "../utils/dialogs";
-import { fApi, checkToken } from "../apis";
+import { fApi, checkToken } from "../dev/mockApis";
 import { NOTEMPTY } from "../utils/validation";
 
 export default {
@@ -77,7 +77,7 @@ export default {
         userSelected: [],
         mp: {},
         modalDate: false,
-        rules: [NOTEMPTY]
+        rules: [NOTEMPTY()]
     }),
     mounted: function () {
         this.pageload()
@@ -122,7 +122,7 @@ export default {
                 this.form.date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + (d.getDate() + 2)
             }
 
-            this.$store.commit("loading", true);
+            console.log("@@@"+this.userSelected);
 
             fApi.sendNotice(
                 this.userSelected,
@@ -142,7 +142,6 @@ export default {
                 }
             )
 
-            this.$store.commit("loading", false);
         }
     }
 }

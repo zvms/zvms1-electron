@@ -1,8 +1,8 @@
-import { isTimeFinished } from "../utils/calc.js";
-import dialogs from "../utils/dialogs";
-import store from "../utils/store";
+import { isTimeFinished } from "../../utils/calc.js";
+import dialogs from "../../utils/dialogs";
+import store from "../../utils/store";
+import { getIpcRenderer } from "../../dev";
 import Axios from "axios";
-import { getIpcRenderer } from "../dev";
 
 let ipcRenderer = getIpcRenderer();
 
@@ -47,43 +47,88 @@ export class ForegroundApi {
     }
 
     async fetchClassList() {
-        let res = await this.get("/class/list");
-        return res.data.class;
+        //let res = await this.get("/class/list");
+        return [{ "id": 202001, "name": "高一1班" },
+        { "id": 202011, "name": "蛟一1班" },
+        { "id": 202002, "name": "高一2班" },
+        { "id": 201901, "name": "高二1班" },
+        { "id": 201801, "name": "高三1班" }];
     }
 
-    async fetchStudentList(classid) {
-        let res = await this.get("/class/stulist/" + classid);
+    async fetchStudentList() {
+        let student = [
+            { "id": 20200101, "name": "王可", "inside": 1.5, "outside": 2, "large": 8 },
+            { "id": 20200102, "name": "王不可", "inside": 2.5, "outside": 2, "large": 8 },
+            { "id": 20200103, "name": "王可以", "inside": 5, "outside": 8, "large": 0 },
+            { "id": 20200104, "name": "王不行", "inside": 1, "outside": 4, "large": 16 },
+            { "id": 20200105, "name": "王彳亍", "inside": 5, "outside": 0, "large": 8 }
+        ]
 
-        for (let stu in res.data.student) {
+        for (let stu in student) {
             stu.finished = isTimeFinished(stu.id, stu.time) ? "是" : "否";
         }
-        return res.data.student;
+
+        return student;
     }
 
     async fetchClassVolunter(classid) {
-        let url = classid ? "/class/volunteer/" + classid : "/volunteer/list/";
-        let res = await this.get(url)
-        return res.data.volunteer;
+        let volunteer = classid ? [
+            {"id": 1, "name": "义工活动1", "date": "2020.10.1", "time": "13:00", "description": "...", "status": 1, "stuMax": 20},
+            {"id": 2, "name": "义工活动2", "date": "2020.10.2", "time": "13:00", "description": "...", "status": 1, "stuMax": 2},
+            {"id": 3, "name": "义工活动3", "date": "2020.10.3", "time": "13:00", "description": "...", "status": 0, "stuMax": 5},
+            {"id": 4, "name": "义工活动4", "date": "2020.10.4", "time": "13:00", "description": "...", "status": 2, "stuMax": 10}
+        ]: [
+            {"id": 1, "name": "义工活动1", "description": "...", "date": "2020.10.1", "time": "13:00", "status": 1, "stuMax": 20},
+            {"id": 2, "name": "义工活动2", "description": "...", "date": "2020.10.2", "time": "13:00", "status": 1, "stuMax": 2},
+            {"id": 3, "name": "义工活动3", "description": "...", "date": "2020.10.3", "time": "13:00", "status": 0, "stuMax": 5},
+            {"id": 4, "name": "义工活动4", "description": "...", "date": "2020.10.4", "time": "13:00", "status": 2, "stuMax": 10}
+        ];
+
+        return volunteer;
     }
 
     async fetchAllVolunter() {
-        let res = await this.get("/volunteer/list")
-        return res.data.volunteer
+        //let res = await this.get("/volunteer/list")
+        return [
+            { "id": 1, "name": "义工活动1", "description": "...", "date": "2020.10.1", "time": "13:00", "status": 1, "stuMax": 20 },
+            { "id": 2, "name": "义工活动2", "description": "...", "date": "2020.10.2", "time": "13:00", "status": 1, "stuMax": 2 },
+            { "id": 3, "name": "义工活动3", "description": "...", "date": "2020.10.3", "time": "13:00", "status": 0, "stuMax": 5 },
+            { "id": 4, "name": "义工活动4", "description": "...", "date": "2020.10.4", "time": "13:00", "status": 2, "stuMax": 10 }
+        ]
     }
 
-    async fetchOneVolunteer(id) {
-        let res = await this.get("/volunteer/fetch/" + id)
-        return res.data;
+    async fetchOneVolunteer() {
+        //let res = await this.get("/volunteer/fetch/" + id)
+        return {
+            "type": "SUCCESS",
+            "message": "获取成功",
+            "name": "义工活动1",
+            "date": "2020.10.1",
+            "time": "13:00",
+            "stuMax": 20,
+            "stuNow": 18,
+            "description": "...",
+            "status": 1,
+            "inside": 0,
+            "outside": 3,
+            "large": 0
+        };
     }
 
     async fetchUnauditedVolunteers() {
-        let res = await this.get("/volunteer/unaudited")
-        return res.data.result;
+        return [
+            { "volId": 1, "stuId": 20200101, "thought": "xxxx" },
+            { "volId": 3, "stuId": 20200102, "thought": "xxxx" }
+        ];
     }
 
-    async fetchSignerList(volid) {
-        let res = await this.get("/volunteer/signerList/" + volid,)
-        return res.data.result;
+    async fetchSignerList() {
+        //let res = await this.get("/volunteer/signerList/" + volid,)
+        return [
+            { "stuId": 20200101, "stuName": "王彳亍" },
+            { "stuId": 20200102, "stuName": "王不可" },
+            { "stuId": 20200103, "stuName": "王可" }
+        ];
     }
 
     async fetchVolbook(id) {
@@ -122,8 +167,8 @@ export class ForegroundApi {
     }
 
     async fetchNotices() {
-        let res = await this.get("/user/notices");
-        return res.data;
+        //let res = await this.get("/user/notices");
+        return [];
     }
 
     async sendNotice(target, title, deadtime, message) {
@@ -151,13 +196,20 @@ export class ForegroundApi {
         return res.data
     }
 
-    async login(userid, passwdMD5, version) {
-        let res = await this.post("/user/login", {
-            "userid": userid,
-            "password": passwdMD5,
-            "version": version
-        })
-        return res.data;
+    async login() {
+        // let res = await this.post("/user/login", {
+        //     "userid": userid,
+        //     "password": passwdMD5,
+        //     "version": version
+        // })
+        return {
+            "type": "SUCCESS",
+            "message": "登陆成功",
+            "username": "Admin",
+            "class": 202001,
+            "permission": 10,
+            "token": "xxxx"
+        };
     }
 
     async modifyPwd(oldMD5, newMD5) {

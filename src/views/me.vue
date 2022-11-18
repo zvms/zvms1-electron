@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import {fApi, checkToken} from "../apis";
+import {fApi, checkToken} from "../dev/mockApis";
 import {permissionNames} from "../utils/permissions";
 
 export default {

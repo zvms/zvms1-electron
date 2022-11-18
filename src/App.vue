@@ -71,7 +71,7 @@
 </style>
 
 <script>
-import { fApi, checkToken } from "./apis";
+import { fApi, checkToken } from "./dev/mockApis";
 import dialogs from "./utils/dialogs.js";
 import { permissionTypes } from "./utils/permissions.js";
 import storeSaver from "./utils/storeSaver.js";
@@ -97,37 +97,30 @@ export default {
   },
 
   methods: {
-    granted: function () {
-      return this.$store.state.info.permission < permissionTypes.teacher;
-    },
-
     changeColorTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
     },
 
-    fetchVol: async function () {
-      if (this.granted()) await this.fetchCurrentClassVol();
-      else await this.fetchAllVol();
+    async fetchVol() {
+      if (this.$store.state.info.permission < permissionTypes.teacher) {
+        await this.fetchCurrentClassVol();
+      } else {
+        await this.fetchAllVol();
+      }
     },
 
     async fetchCurrentClassVol() {
-      this.$store.commit("loading", true);
       let volworks = await fApi.fetchClassVolunter(this.$store.state.info.class);
       volworks
         ? (this.currentVol = volworks)
         : dialogs.toasts.error("获取义工列表失败");
-
-      this.$store.commit("loading", false);
     },
 
     async fetchAllVol() {
-      this.$store.commit("loading", true);
       let volworks = await fApi.fetchAllVolunter();
       volworks
         ? (this.currentVol = volworks)
         : dialogs.toasts.error("获取义工列表失败");
-
-      this.$store.commit("loading", false);
     },
 
     async listen(t) {

@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { fApi } from "../apis";
+import { fApi } from "../dev/mockApis";
 import volcert from "./volcert.vue";
 
 export default {

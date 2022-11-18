@@ -139,7 +139,7 @@
 import dialogs from "../../utils/dialogs.js";
 import { permissionTypes } from "../../utils/permissions";
 import volinfo from "../../components/volinfo";
-import { fApi, checkToken } from "../../apis";
+import { fApi, checkToken } from "../../dev/mockApis";
 import axios from "axios";
 import { getIpcRenderer } from "../../dev";
 
@@ -258,7 +258,7 @@ export default {
     },
     submitThought() {
       this.dialog2 = false;
-      this.$store.commit("loading", true);
+      
       this.thoughts.forEach((e) => {
         console.log(parseInt(e.stuId), e.stuId)
         axios
@@ -283,13 +283,13 @@ export default {
             dialogs.toasts.error(err);
           })
           .finally(() => {
-            this.$store.commit("loading", false);
+            
           });
       })
       this.pictures = []
       this.thoughts = []
       this.curVolId = null
-      this.$store.commit("loading", false);
+      
     },
     signupVolunteer: function (volid) {
       if (this.stulstSelected.length == 0) {
@@ -314,7 +314,7 @@ export default {
           dialogs.toasts.error(err);
         })
         .finally(() => {
-          this.$store.commit("loading", false);
+          
         });
       this.dialog1 = false;
     },

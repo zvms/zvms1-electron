@@ -101,8 +101,7 @@
 import dialogs from "../../utils/dialogs.js";
 import { permissionTypes } from "../../utils/permissions";
 import { validate, validateNotNAN, validateNotLargerThan, validateNotNegative } from "../../utils/validation";
-import axios from "axios";
-import { fApi, checkToken } from "../../apis";
+import { fApi, checkToken } from "../../dev/mockApis";
 
 export default {
   data: () => ({
@@ -168,69 +167,48 @@ export default {
       this.volTO = vol.outside;
       this.volTL = vol.large;
     },
-    audit: function (status) {
-      dialogs.confirm("", (value) => {
-        if (value) {
-          this.dialog1 = false;
-          if (status == 1) {
-            if (this.inside == undefined || this.inside == "")
-              this.inside = this.volTI;
-            if (this.outside == undefined || this.outside == "")
-              this.outside = this.volTO;
-            if (this.large == undefined || this.large == "")
-              this.large = this.volTL;
-          } else {
-            this.inside = "0";
-            this.outside = "0";
-            this.large = "0";
-          }
-
-          validate([this.inside, this.outside, this.large], [
-            validateNotNAN(),
-            validateNotNegative(),
-            validateNotLargerThan(4)
-          ]);
-
-          this.$store.commit("loading", true);
-          axios
-            .post("/volunteer/audit/" + this.volid, {
-              "thought": [{
-                "stuId": this.stuid,
-                "status": status,
-                "inside": this.inside,
-                "outside": this.outside,
-                "large": this.large
-              }]
-            })
-            .then((response) => {
-              console.log(response.data);
-              if (response.data.type == "SUCCESS") {
-                dialogs.toasts.success(response.data.message);
-                this.volDate = response.data.date;
-                this.volTime = response.data.time;
-                this.volDesc = response.data.description;
-                this.volTI = response.data.inside;
-                this.volTO = response.data.outside;
-                this.volTL = response.data.large;
-              } else {
-                dialogs.toasts.error(response.data.message);
-              }
-            })
-            .catch((err) => {
-              dialogs.toasts.error(err);
-            })
-            .finally(() => {
-              this.inside = undefined
-              this.outside = undefined
-              this.large = undefined
-              
-              this.$store.commit("loading", false);
-            });
-          this.$store.commit("loading", false);
-          // location.reload();
-          this.pageload()
+    audit: async function (status) {
+      let value = await dialogs.confirm()
+      if (value) {
+        this.dialog1 = false;
+        if (status == 1) {
+          if (this.inside == undefined || this.inside == "")
+            this.inside = this.volTI;
+          if (this.outside == undefined || this.outside == "")
+            this.outside = this.volTO;
+          if (this.large == undefined || this.large == "")
+            this.large = this.volTL;
+        } else {
+          this.inside = "0";
+          this.outside = "0";
+          this.large = "0";
         }
-      });
+
+        validate([this.inside, this.outside, this.large], [
+          validateNotNAN(),
+          validateNotNegative(),
+          validateNotLargerThan(4)
+        ]);
+
+
+        let data = await fApi.audit(this.stuid, status, this.inside, this.outside, this.large)
+        if (data.type == "SUCCESS") {
+          dialogs.toasts.success(data.message);
+          this.volDate = data.date;
+          this.volTime = data.time;
+          this.volDesc = data.description;
+          this.volTI = data.inside;
+          this.volTO = data.outside;
+          this.volTL = data.large;
+        } else {
+          dialogs.toasts.error(data.message);
+        }
+        this.inside = undefined
+        this.outside = undefined
+        this.large = undefined
+        // location.reload();
+        this.pageload()
+      }
     }
   },
 };

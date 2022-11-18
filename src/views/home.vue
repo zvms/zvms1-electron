@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import {checkToken } from "../apis";
+import {checkToken} from "../dev/mockApis";
 export default {
   name: "home",
   mounted: function () {

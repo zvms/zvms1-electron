@@ -91,7 +91,7 @@
 
 <script>
 import dialogs from "../../utils/dialogs.js";
-import { fApi, checkToken } from "../../apis";
+import { fApi, checkToken } from "../../dev/mockApis";
 import { NOTEMPTY } from "../../utils/validation.js";
 import axios from "axios";
 
@@ -112,7 +112,7 @@ export default {
       outside: undefined,
       large: undefined
     },
-    rules: [NOTEMPTY]
+    rules: [NOTEMPTY()]
   }),
   mounted: function () {
     this.pageload();
@@ -151,7 +151,7 @@ export default {
         dialogs.toasts.error("报名学生列表为空");
         return;
       }
-      this.$store.commit("loading", true);
+      
       axios
         .post("/volunteer/holiday", {
           name: this.form.name,
@@ -175,7 +175,7 @@ export default {
           dialogs.toasts.error(err);
         })
         .finally(() => {
-          this.$store.commit("loading", false);
+          
         });
     }
   },

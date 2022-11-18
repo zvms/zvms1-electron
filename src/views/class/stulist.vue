@@ -42,13 +42,14 @@
 <script>
 import { permissionTypes } from "../../utils/permissions.js";
 import stuvolist from "../../components/stuvolist";
-import { fApi, checkToken } from "../../apis";
+import { fApi, checkToken } from "../../dev/mockApis";
 
 export default {
   data: () => ({
+    classes: undefined,
+    classid: undefined,
     students: undefined,
     search: "",
-    classes: undefined,
     nowclass: undefined,
     nowclassname: undefined,
     menudisabled: true,
@@ -83,45 +84,43 @@ export default {
       else
         return mi + "分钟";
     },
+
+    async classid2name(classid) {
+      for (var i = 0; i < this.classes.length; i++)
+        if (this.classes[i]["id"] == classid) return this.classes[i]["name"];
+    },
+
     async pageload() {
-      this.$store.commit("loading", true);
       await checkToken(this);
+
       this.classes = await fApi.fetchClassList();
-      this.nowclass = this.$store.state.info.class;
-      this.nowclassname = this.$store.state.info.classname;
+
 
       if (this.$store.state.info.permission > permissionTypes.secretary) {
         this.menudisabled = false;
         this.tipText = "点击选择班级";
-        if (this.$route.params != undefined) {
-          this.nowclass = this.$route.params.classid;
-          this.nowclassname = this.classid2name(this.nowclass);
+        if (this.$route.params.classid) {
+          this.viewClassId = this.$route.params.classid;
+          this.viewClassName = this.classid2name(this.viewClassId);
+        } else {
+          this.viewClassName = "点击选择班级";
         }
+      } else {
+        this.viewClassId = this.$store.state.info.class
+        this.viewClassName = this.$store.state.info.classname;
       }
-      if (
-        this.$store.state.info.permission > permissionTypes.secretary &&
-        this.$route.params.classid <= 200000
-      )
-        this.nowclassname = "点击选择班级";
-      else this.fetchstulist();
 
+      this.fetchstulist();
     },
 
-    fetchstulist: async function () {
-      this.students = undefined;
-      let stus = await fApi.fetchStudentList(this.nowclass)
-      stus ? (this.students = stus) : (this.students = undefined);
+    async fetchstulist() {
+      this.students = await fApi.fetchStudentList(this.viewClassId)
 
       for (let i in this.students) {
         this.students[i].inside = this.timeToHint(this.students[i].inside);
         this.students[i].outside = this.timeToHint(this.students[i].outside);
         this.students[i].large = this.timeToHint(this.students[i].large);
       }
-    },
-
-    classid2name: function (classid) {
-      for (var i = 0; i < this.classes.length; i++)
-        if (this.classes[i]["id"] == classid) return this.classes[i]["name"];
     },
 
     rowClick: function (item) {

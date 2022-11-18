@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { fApi } from "../apis";
+import { fApi } from "../dev/mockApis";
 import dialogs from "../utils/dialogs";
 
 export default {

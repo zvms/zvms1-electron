@@ -54,4 +54,4 @@ export function validate(vars, validators) {
     return -1;
 }
 
-export const NOTEMPTY = () => v => !!v || '此处不能为空'
+export const NOTEMPTY =()=> v => !!v || '此处不能为空'

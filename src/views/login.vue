@@ -18,10 +18,9 @@
 </template>
 
 <script>
-import { fApi,checkToken } from "../apis"
+import { fApi, checkToken } from "../dev/mockApis"
 import dialogs from "../utils/dialogs.js"; //弹出toast提示用
 import { NOTEMPTY } from "../utils/validation.js"; //校验表单完整性
-import axios from "axios"; //ajax网络库
 import { applyNavItems } from "../utils/nav";
 import storeSaver from "../utils/storeSaver.js";
 import { getIpcRenderer } from "../dev";
@@ -40,7 +39,7 @@ export default {
       userid: undefined,
       password: undefined,
     },
-    rules: [NOTEMPTY], //表单校验规则
+    rules: [NOTEMPTY()], //表单校验规则
     winheight: document.documentElement.clientHeight - 100, //一个比较失败的自动调整大小
   }),
   mounted: async function () {
@@ -50,51 +49,36 @@ export default {
     });
   },
   methods: {
-    login() {
+    async login() {
       if (this.$refs.form.validate()) {
-        this.$store.commit("loading", true);
-        axios
-          .post("/user/login", {
-            "userid": this.form.userid,
-            "password": md5(this.form.password),
-            "version": current_version
-          })
-          .then(async (response) => {
-            //对传回数据进行处理
-            // console.log(response.data)
-            if (response.data.type == "SUCCESS") {
-              ipcRenderer.send('endflash');
-              dialogs.toasts.success(response.data.message);
-              //将一切保存到$store
-              this.$store.commit('notices', await fApi.fetchNotices());
-
-              this.$store.commit("login", true);
-              this.$store.commit("info", {
-                username: response.data.username,
-                permission: response.data.permission,
-                class: response.data.class,
-                classname: response.data.classname,
-              });
-              //设置token
-              this.$store.commit("token", response.data.token);
-              this.$router.push("/me");
-              //更新抽屉导航栏
-              applyNavItems(response.data.permission);
-            } else if (response.data.type == "ERROR") {
-              dialogs.toasts.error(response.data.message);
-              this.form.password = undefined;
-            } else {
-              dialogs.toasts.error("未知错误!");
-              this.form.password = undefined;
-            }
-          })
-          .catch((error) => {
-            dialogs.toasts.error(error);
-            this.form.password = undefined;
-          })
-          .finally(() => {
-            this.$store.commit("loading", false);
+        let data = await fApi.login(this.form.userid, md5(this.form.password), current_version);
+        if (data.type == "SUCCESS") {
+          ipcRenderer.send('endflash');
+          dialogs.toasts.success(data.message);
+          //将一切保存到$store
+          this.$store.commit('notices', await fApi.fetchNotices());
+          this.$store.commit("login", true);
+          this.$store.commit("info", {
+            username: data.username,
+            permission: data.permission,
+            class: data.class,
+            classname: data.classname,
           });
+          //设置token
+          this.$store.commit("token", data.token);
+          
+          //更新抽屉导航栏
+          applyNavItems(data.permission,this.$store);
+
+          this.$router.push("/me");
+        } else if (data.type == "ERROR") {
+          dialogs.toasts.error(data.message);
+          this.form.password = undefined;
+        } else {
+          dialogs.toasts.error("未知错误!");
+          this.form.password = undefined;
+        }
+
       }
     },
   },

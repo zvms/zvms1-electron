@@ -1,7 +1,7 @@
 import { permissionTypes } from "./permissions"
 
 
-export function getNavItems(permission, store) {
+export function getNavItems(permission) {
     let navItems = {
         me: {
             title: "我的",
@@ -20,7 +20,7 @@ export function getNavItems(permission, store) {
         },
         stuList: {
             title: "学生列表",
-            to: "/class/stulist/" + (store === undefined ? "" : store.info.class),
+            to: "/class/stulist",
             icon: "mdi-format-list-bulleted-square",
         },
         volList: {
@@ -100,11 +100,9 @@ export function getNavItems(permission, store) {
     items.push(navItems.report);
     items.push(navItems.about);
     items.push(navItems.logout);
-
-    console.log(permission, items);
     return items;
 }
 
 export function applyNavItems(permission, store) {
-    return store.commit("draweritems", getNavItems(permission, store));
+    return store.commit("draweritems", getNavItems(permission));
 }

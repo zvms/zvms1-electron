@@ -92,9 +92,8 @@
 
 <script>
 import dialogs from "../../utils/dialogs";
-import { fApi, checkToken } from "../../apis";
+import { fApi, checkToken } from "../../dev/mockApis";
 import { NOTEMPTY } from "../..//utils/validation.js";
-import axios from "axios";
 
 export default {
   data: () => ({
@@ -115,7 +114,7 @@ export default {
       large: undefined,
       class: undefined,
     },
-    rules: [NOTEMPTY],
+    rules: [NOTEMPTY()],
     mp: {}
   }),
   components: {},
@@ -124,7 +123,7 @@ export default {
   },
   methods: {
     async pageload() {
-      this.$store.commit("loading", true);
+
       await checkToken(this);
       let classes = await fApi.fetchClassList();
       classes
@@ -133,7 +132,7 @@ export default {
 
       for (const cls of this.classes)
         this.mp[cls.id] = cls.name;
-      this.$store.commit("loading", false);
+
     },
     createVolunteer: async function () {
       if (this.$refs.form.validate()) {
@@ -159,48 +158,34 @@ export default {
           return;
         }
 
-        this.$store.commit("loading", true);
-        await axios
-          .post("/volunteer/create", {
-            name: this.form.name,
-            date: this.form.date,
-            time: this.form.time,
-            stuMax: parseInt(this.form.stuMax),
-            description: this.form.description,
-            inside: parseInt(this.form.inside),
-            outside: parseInt(this.form.outside),
-            large: parseInt(this.form.large),
-            class: this.classSelected,
-          })
-          .then((response) => {
-            console.log(response.data);
-            if (response.data.type == "SUCCESS") {
-              dialogs.toasts.success(response.data.message);
 
-              const d = new Date();
-              this.classSelected.forEach(async (i) => {
-                await fApi.sendNotice(
-                  [i.id],
-                  `新的义工：${this.form.name}（限报人数：${i.stuMax}）`,
-                  d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + (d.getDate() + 2),
-                  this.form.description, () => {
-                    for (let k in this.form)
-                      this.form[k] = undefined
-                    this.classSelected = []
-                  }
-                )
-              });
+        let data = await fApi.createVol(this.form.name,
+          this.form.date,
+          this.form.time,
+          parseInt(this.form.stuMax),
+          this.form.description,
+          parseInt(this.form.inside),
+          parseInt(this.form.outside),
+          parseInt(this.form.large),
+          this.classSelected,
+        )
+        dialogs.toasts.success(data.message);
 
-              this.$router.push('/me');
-            } else {
-              dialogs.toasts.error(response.data.message);
+        const d = new Date();
+        this.classSelected.forEach(async (i) => {
+          await fApi.sendNotice(
+            [i.id],
+            `新的义工：${this.form.name}（限报人数：${i.stuMax}）`,
+            d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + (d.getDate() + 2),
+            this.form.description, () => {
+              for (let k in this.form)
+                this.form[k] = undefined
+              this.classSelected = []
             }
-          })
-          .catch((err) => {
-            dialogs.toasts.error(err);
-          });
+          )
+        });
 
-        this.$store.commit("loading", false);
+        this.$router.push('/me');
       }
     },
     addToList: function () {

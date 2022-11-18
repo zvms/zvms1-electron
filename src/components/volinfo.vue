@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { fApi } from '../dev/mockApis';
 export default {
   name: "volinfo",
   props: ["volid"],

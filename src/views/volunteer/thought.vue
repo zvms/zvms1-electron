@@ -94,7 +94,7 @@
 import dialogs from "../../utils/dialogs.js";
 import { permissionTypes } from "../../utils/permissions";
 import axios from "axios";
-import { fApi, checkToken } from "../../apis";
+import { fApi, checkToken } from "../../dev/mockApis";
 
 export default {
   data: () => ({
@@ -170,7 +170,7 @@ export default {
         dialogs.toasts.error("没写感想就想交？在想桃子？");
         return
       }
-      this.$store.commit("loading", true);
+      
       axios
         .post("/volunteer/thought/" + this.volid, {
           "thought": [{
@@ -193,9 +193,9 @@ export default {
           dialogs.toasts.error(err);
         })
         .finally(() => {
-          this.$store.commit("loading", false);
+          
         });
-      this.$store.commit("loading", false);
+      
     },
 
     uploadPicture() {

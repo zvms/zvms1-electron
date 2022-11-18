@@ -15,7 +15,7 @@
 
 <script>
 import dialogs from "../../utils/dialogs";
-import { fApi, checkToken } from "../../apis";
+import { fApi, checkToken } from "../../dev/mockApis";
 import { permissionTypes } from "../../utils/permissions";
 
 export default {
