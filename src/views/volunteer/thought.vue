@@ -94,7 +94,7 @@
 import dialogs from "../../utils/dialogs.js";
 import { permissionTypes } from "../../utils/permissions";
 import axios from "axios";
-import { fApi, checkToken } from "../../dev/mockApis";
+import { fApi, checkToken } from "../../apis";
 
 export default {
   data: () => ({
@@ -198,11 +198,11 @@ export default {
       
     },
 
-    uploadPicture() {
+    async uploadPicture() {
       if (!this.opening) {
         this.opening = true;
 
-        fApi.openPictures((data) => {
+        await fApi.openPictures((data) => {
           if (data) {
             this.pictures.push({
               id: this.count,

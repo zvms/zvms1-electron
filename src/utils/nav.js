@@ -20,7 +20,7 @@ export function getNavItems(permission) {
         },
         stuList: {
             title: "学生列表",
-            to: "/class/stulist",
+            to: "/class/stulist/0",
             icon: "mdi-format-list-bulleted-square",
         },
         volList: {

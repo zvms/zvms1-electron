@@ -91,7 +91,7 @@
 
 <script>
 import dialogs from "../../utils/dialogs.js";
-import { fApi, checkToken } from "../../dev/mockApis";
+import { fApi, checkToken } from "../../apis";
 import { NOTEMPTY } from "../../utils/validation.js";
 import axios from "axios";
 

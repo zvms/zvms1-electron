@@ -16,7 +16,7 @@
 
 <script>
 import dialogs from "../utils/dialogs";
-import { checkToken, fApi } from "../dev/mockApis"
+import { checkToken, fApi } from "../apis"
 
 var md5 = require('md5-node');
 export default {

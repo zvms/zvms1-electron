@@ -15,7 +15,7 @@
 <script>
 import dialogs from "../utils/dialogs";
 import { NOTEMPTY } from "../utils/validation";
-import { fApi } from "../dev/mockApis";
+import { fApi } from "../apis";
 
 export default {
   name: "report",

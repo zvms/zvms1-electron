@@ -18,14 +18,12 @@
 </template>
 
 <script>
-import { fApi, checkToken } from "../dev/mockApis"
+import { fApi, checkToken, getIpcRenderer } from "../apis"
 import dialogs from "../utils/dialogs.js"; //弹出toast提示用
 import { NOTEMPTY } from "../utils/validation.js"; //校验表单完整性
 import { applyNavItems } from "../utils/nav";
 import storeSaver from "../utils/storeSaver.js";
-import { getIpcRenderer } from "../dev";
 
-let ipcRenderer = getIpcRenderer();
 
 var md5 = require('md5-node');
 var current_version = "51141167bd8394d8da590fddaeb3d91e";
@@ -53,7 +51,7 @@ export default {
       if (this.$refs.form.validate()) {
         let data = await fApi.login(this.form.userid, md5(this.form.password), current_version);
         if (data.type == "SUCCESS") {
-          ipcRenderer.send('endflash');
+          getIpcRenderer().send('endflash');
           dialogs.toasts.success(data.message);
           //将一切保存到$store
           this.$store.commit('notices', await fApi.fetchNotices());
@@ -66,9 +64,9 @@ export default {
           });
           //设置token
           this.$store.commit("token", data.token);
-          
+
           //更新抽屉导航栏
-          applyNavItems(data.permission,this.$store);
+          applyNavItems(data.permission, this.$store);
 
           this.$router.push("/me");
         } else if (data.type == "ERROR") {

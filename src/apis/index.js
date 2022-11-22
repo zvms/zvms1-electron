@@ -1,4 +1,19 @@
-export * from "./fApi";
-export * from "./checkToken";
-export * from "./initAxios";
-export * from "./logout";
+import { fApi as realFApi } from "./fApi";
+import { checkToken as realCheckToken } from "./checkToken";
+import { initAxios as realInitAxios } from "./initAxios";
+import { logout as realLogout } from "./logout";
+import { getIpcRenderer as realGetIpcRenderer } from "./getIpcRenderer";
+
+import { fApi as mockFApi } from "./mockApis/fApi";
+import { checkToken as mockCheckToken } from "./mockApis/checkToken";
+import { initAxios as mockInitAxios } from "./mockApis/initAxios";
+import { logout as mockLogout } from "./mockApis/logout";
+import { getIpcRenderer as mockGetIpcRenderer } from "./mockApis/getIpcRenderer";
+
+import { devConfig } from "../dev";
+
+export const initAxios = devConfig.backend === "mock" ? mockInitAxios : realInitAxios;
+export const fApi = devConfig.backend === "mock" ? mockFApi : realFApi;
+export const checkToken = devConfig.backend === "mock" ? mockCheckToken : realCheckToken;
+export const logout = devConfig.backend === "mock" ? mockLogout : realLogout;
+export const getIpcRenderer = devConfig.env === "electron" ? realGetIpcRenderer : mockGetIpcRenderer;

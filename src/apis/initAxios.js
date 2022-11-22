@@ -1,8 +1,8 @@
-import { baseURL } from "../dev";
 import Axios from "axios";
+import store from "../utils/store";
 
-export function initAxios(store) {
-    Axios.defaults.baseURL = baseURL;
+export function initAxios() {
+    Axios.defaults.baseURL = "http://10.49.23.47:5000";
     //Axios携带cookie
     Axios.defaults.withCredentials = true;
     //post设定，自动序列化表单的json数据

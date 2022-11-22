@@ -7,7 +7,7 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on: tooltip }">
               <v-btn depressed v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                <div class="headline">{{ nowclassname }}</div>
+                <div class="headline">{{ viewClassName }}</div>
               </v-btn>
               <div class="headline">学生列表</div>
             </template>
@@ -25,7 +25,7 @@
     </v-card-title>
     <v-card-text>
       <v-data-table fixed-header :headers="headers" :items="students" :search="search" :loading="$store.state.isLoading"
-        @click:row="rowClick" loading-text="加载中..." no-data-text="没有数据哦" no-results-text="没有结果"></v-data-table>
+        @click:row="rowClick" loading-text="加载中..." no-data-text="没有数据哦，请选择班级" no-results-text="没有结果"></v-data-table>
       <v-dialog v-model="dialog" max-width="80%">
         <v-card>
           <stuvolist :userid="rowUserId" :title="rowUserName" />
@@ -42,16 +42,15 @@
 <script>
 import { permissionTypes } from "../../utils/permissions.js";
 import stuvolist from "../../components/stuvolist";
-import { fApi, checkToken } from "../../dev/mockApis";
+import { fApi, checkToken } from "../../apis";
 
 export default {
   data: () => ({
     classes: undefined,
-    classid: undefined,
     students: undefined,
     search: "",
-    nowclass: undefined,
-    nowclassname: undefined,
+    viewClassId: "0",
+    viewClassName: "UNKNOWN",
     menudisabled: true,
     dialog: false,
     rowUserId: 0,
@@ -95,11 +94,10 @@ export default {
 
       this.classes = await fApi.fetchClassList();
 
-
       if (this.$store.state.info.permission > permissionTypes.secretary) {
         this.menudisabled = false;
         this.tipText = "点击选择班级";
-        if (this.$route.params.classid) {
+        if (this.$route.params.classid !== "0") {
           this.viewClassId = this.$route.params.classid;
           this.viewClassName = this.classid2name(this.viewClassId);
         } else {
@@ -110,7 +108,8 @@ export default {
         this.viewClassName = this.$store.state.info.classname;
       }
 
-      this.fetchstulist();
+      if(this.viewClassId!=="0")
+        await this.fetchstulist();
     },
 
     async fetchstulist() {
@@ -130,8 +129,8 @@ export default {
     },
 
     changeclass: function (item) {
-      this.nowclass = item.id;
-      this.nowclassname = item.name;
+      this.viewClassId = item.id;
+      this.viewClassName = item.name;
       this.fetchstulist();
     },
   },

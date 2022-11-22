@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import {fApi, checkToken} from "../dev/mockApis";
+import {fApi, checkToken} from "../apis";
 import {permissionNames} from "../utils/permissions";
 
 export default {
@@ -110,8 +110,8 @@ export default {
         { id: 3, icon: "mdi-label", content: this.$store.state.info.class },
       ];
     },
-    randomThought: function () {
-      this.thought  =fApi.fetchRandomThought();
+    randomThought: async function () {
+      this.thought  = await fApi.fetchRandomThought();
     },
     showNotice(notice) {
       this.dialog = true;

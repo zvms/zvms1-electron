@@ -101,7 +101,7 @@
 import dialogs from "../../utils/dialogs.js";
 import { permissionTypes } from "../../utils/permissions";
 import { validate, validateNotNAN, validateNotLargerThan, validateNotNegative } from "../../utils/validation";
-import { fApi, checkToken } from "../../dev/mockApis";
+import { fApi, checkToken } from "../../apis";
 
 export default {
   data: () => ({

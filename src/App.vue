@@ -71,13 +71,11 @@
 </style>
 
 <script>
-import { fApi, checkToken } from "./dev/mockApis";
+import { fApi, checkToken, getIpcRenderer } from "./apis";
 import dialogs from "./utils/dialogs.js";
 import { permissionTypes } from "./utils/permissions.js";
 import storeSaver from "./utils/storeSaver.js";
-import { getIpcRenderer } from "./dev";
 
-let ipcRenderer = getIpcRenderer();
 
 export default {
   name: "App",
@@ -127,7 +125,7 @@ export default {
       if (!t.$store.state.isLogined) {
         console.log(t.$store.state);
         console.error("!login");
-        ipcRenderer.send('flash');
+        getIpcRenderer().send('flash');
         return;
       }
 
@@ -146,20 +144,20 @@ export default {
             if (vol[i]["id"] != last[i]["id"])
               flag = true;
         }
-        if (flag) ipcRenderer.send('flash');
+        if (flag) getIpcRenderer().send('flash');
       }
     },
 
     minwindow() {
-      ipcRenderer.send('minwindow')
+      getIpcRenderer().send('minwindow')
     },
 
     maxwindow() {
-      ipcRenderer.send('maxwindow')
+      getIpcRenderer().send('maxwindow')
     },
 
     closewindow() {
-      ipcRenderer.send('closewindow')
+      getIpcRenderer().send('closewindow')
     },
   },
 };

@@ -18,3 +18,14 @@ export function isTimeFinished(id, time) {
     return result;
 }
 
+export function timeToHint(a) {
+    let hr = parseInt(a / 60);
+    let mi = parseInt(a % 60);
+    if (hr != 0)
+        if (mi != 0)
+            return hr + " 小时 " + mi + " 分钟";
+        else
+            return hr + " 小时 ";
+    else
+        return mi + "分钟";
+}

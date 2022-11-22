@@ -62,7 +62,7 @@
 
 <script>
 import dialogs from "../utils/dialogs";
-import { fApi, checkToken } from "../dev/mockApis";
+import { fApi, checkToken } from "../apis";
 import { NOTEMPTY } from "../utils/validation";
 
 export default {
@@ -111,7 +111,7 @@ export default {
         delFromList: function (i) {
             this.userSelected.splice(i, 1);
         },
-        send: function () {
+        send: async function () {
             if (!this.userSelected || this.userSelected.length == 0) {
                 dialogs.toasts.error("请选择发送目标");
                 return
@@ -122,26 +122,20 @@ export default {
                 this.form.date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + (d.getDate() + 2)
             }
 
-            console.log("@@@"+this.userSelected);
-
-            fApi.sendNotice(
+            let data = await fApi.sendNotice(
                 this.userSelected,
                 this.form.title,
                 this.form.date,
-                this.form.message,
-
-                (data) => {
-                    if (data.type == "SUCCESS") {
-                        dialogs.toasts.success(data.message);
-                        for (let k in this.form)
-                            this.form[k] = undefined
-                        this.userSelected = []
-                    } else {
-                        dialogs.toasts.error(data.message);
-                    }
-                }
-            )
-
+                this.form.message
+            );
+            if (data.type == "SUCCESS") {
+                dialogs.toasts.success(data.message);
+                for (let k in this.form)
+                    this.form[k] = undefined
+                this.userSelected = []
+            } else {
+                dialogs.toasts.error(data.message);
+            }
         }
     }
 }

@@ -92,7 +92,7 @@
 
 <script>
 import dialogs from "../../utils/dialogs";
-import { fApi, checkToken } from "../../dev/mockApis";
+import { fApi, checkToken } from "../../apis";
 import { NOTEMPTY } from "../..//utils/validation.js";
 
 export default {
@@ -132,7 +132,6 @@ export default {
 
       for (const cls of this.classes)
         this.mp[cls.id] = cls.name;
-
     },
     createVolunteer: async function () {
       if (this.$refs.form.validate()) {
@@ -157,7 +156,6 @@ export default {
           dialogs.toasts.error("数据不合法");
           return;
         }
-
 
         let data = await fApi.createVol(this.form.name,
           this.form.date,

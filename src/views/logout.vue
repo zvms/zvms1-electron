@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { fApi } from "../dev/mockApis";
+import { fApi } from "../apis";
 
 export default {
   name: "logout",

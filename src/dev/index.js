@@ -1,24 +1,5 @@
-export const isElectron = false;
-export const fakeBackend  = true;
-export const mockApi = true;
-
-export const baseURL = (!fakeBackend)?"http://172.31.2.3:5000":"http://10.49.23.47:5000"
-
-const fakeIpcRenderer = {
-    on() { },
-    once() { },
-    removeAllListeners() { },
-    removeListener() { },
-    send() { },
-    sendSync() { },
-    sendTo() { },
-    sendToHost() { },
+export const devConfig = {
+    env: "browser"/* "electron" */,
+    backend: "mock"/* "default" "http://10.49.23.47:5000" */,
 }
 
-export function getIpcRenderer() {
-    if (isElectron) {
-        return window.require('electron').ipcRenderer
-    } else {
-        return fakeIpcRenderer;
-    }
-}

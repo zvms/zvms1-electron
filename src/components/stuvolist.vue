@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { fApi } from "../dev/mockApis";
+import { fApi } from "../apis";
 import volcert from "./volcert.vue";
 
 export default {
@@ -52,23 +52,12 @@ export default {
     this.init();
   },
   methods: {
-    timeToHint: function (a) {
-      let hr = parseInt(a / 60);
-      let mi = parseInt(a % 60);
-      if (hr != 0)
-        if (mi != 0)
-          return hr + " 小时 " + mi + " 分钟";
-        else
-          return hr + " 小时 ";
-      else
-        return mi + "分钟";
-    },
     init: async function () {
       this.volworks = undefined;
       this.stuid = this.userid;
       if (this.userid != 0 && this.userid != undefined) {
-
-        this.volworks = fApi.fetchVolbook(this.userid);
+        this.volworks = await fApi.fetchVolbook(this.userid);
+        console.log(this.volworks);
       }
     },
     rowClick: function (item) {

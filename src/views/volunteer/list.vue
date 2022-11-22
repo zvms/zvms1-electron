@@ -139,11 +139,10 @@
 import dialogs from "../../utils/dialogs.js";
 import { permissionTypes } from "../../utils/permissions";
 import volinfo from "../../components/volinfo";
-import { fApi, checkToken } from "../../dev/mockApis";
+import { fApi, checkToken, getIpcRenderer } from "../../apis";
 import axios from "axios";
-import { getIpcRenderer } from "../../dev";
 
-let ipcRenderer = getIpcRenderer();
+
 export default {
   data: () => ({
     search: "",
@@ -181,7 +180,7 @@ export default {
   methods: {
     async pageload() {
       await checkToken(this);
-      ipcRenderer.send('endflash');
+      getIpcRenderer().send('endflash');
       let volworks = await this.fetchVol();
       this.volworks = volworks.sort((a, b) => b.id - a.id);
       this.$store.commit("lastSeenVol", this.volworks);
@@ -210,15 +209,15 @@ export default {
     removePic(i) {
       this.pictures.splice(i, 1)
     },
-    choosePictures: function () {
-      fApi.openPictures((data) => {
+    choosePictures: async function () {
+      await fApi.openPictures((data) => {
         if (data === null) return;
 
         this.pictures.push(data)
       })
     },
-    chooseCSV: function () {
-      fApi.openCSV((data) => {
+    chooseCSV: async function () {
+      await fApi.openCSV((data) => {
         if (data === null) return;
 
         this.thoughts = []

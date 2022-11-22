@@ -1,10 +1,9 @@
-import { isTimeFinished } from "../utils/calc.js";
+import { isTimeFinished, timeToHint } from "../utils/calc.js";
 import dialogs from "../utils/dialogs";
 import store from "../utils/store";
 import Axios from "axios";
-import { getIpcRenderer } from "../dev";
+import { getIpcRenderer } from "../apis";
 
-let ipcRenderer = getIpcRenderer();
 
 export class ForegroundApi {
     _id = 1;
@@ -54,8 +53,8 @@ export class ForegroundApi {
     async fetchStudentList(classid) {
         let res = await this.get("/class/stulist/" + classid);
 
-        for (let stu in res.data.student) {
-            stu.finished = isTimeFinished(stu.id, stu.time) ? "是" : "否";
+        for (let stu of res.data.student) {
+            stu.finished = isTimeFinished(stu.id, stu) ? "是" : "否";
         }
         return res.data.student;
     }
@@ -94,9 +93,9 @@ export class ForegroundApi {
         //   } TODO
 
         let volworks = res.data.rec.map(v => ({
-            inside: this.timeToHint(v.inside),
-            outside: this.timeToHint(v.outside),
-            large: this.timeToHint(v.large),
+            inside: timeToHint(v.inside),
+            outside: timeToHint(v.outside),
+            large: timeToHint(v.large),
         }));
         return volworks;
     }
@@ -107,18 +106,18 @@ export class ForegroundApi {
     }
 
     async openPictures(callback) {
-        ipcRenderer.once("open-picture-recv", (_, data) => {
+        getIpcRenderer().once("open-picture-recv", (_, data) => {
             callback(data)
         })
-        ipcRenderer.send("open-picture")
+        getIpcRenderer().send("open-picture")
     }
 
     async openCSV(callback) {
-        ipcRenderer.once("open-csv-recv", (_, data) => {
+        getIpcRenderer().once("open-csv-recv", (_, data) => {
             callback(data)
         })
 
-        ipcRenderer.send("open-csv")
+        getIpcRenderer().send("open-csv")
     }
 
     async fetchNotices() {
