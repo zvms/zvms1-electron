@@ -5,17 +5,12 @@
 </template>
 
 <script>
-import { fApi } from "../apis";
+import { logout } from "../apis";
 
 export default {
   name: "logout",
-  mounted: function () {
-    this.logout();
-  },
-  methods: {
-    async logout() {
-      await fApi.logout();
-    },
-  },
+  async mounted() {
+    await logout();
+  }
 };
 </script>>

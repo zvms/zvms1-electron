@@ -93,7 +93,6 @@
 import dialogs from "../../utils/dialogs.js";
 import { fApi, checkToken } from "../../apis";
 import { NOTEMPTY } from "../../utils/validation.js";
-import axios from "axios";
 
 export default {
   data: () => ({
@@ -146,37 +145,22 @@ export default {
     delFromList: function (i) {
       this.form.stuSelected.splice(i, 1);
     },
-    submit: function () {
+    async submit() {
       if (this.form.stuSelected.length == 0) {
         dialogs.toasts.error("报名学生列表为空");
         return;
       }
-      
-      axios
-        .post("/volunteer/holiday", {
-          name: this.form.name,
-          date: this.form.date,
-          time: this.form.time,
-          stuId: this.form.stuSelected,
-          description: "自提交义工：" + this.form.description,
-          inside: isNaN(parseInt(this.form.inside)) ? 0 : parseInt(this.form.inside),
-          outside: isNaN(parseInt(this.form.outside)) ? 0 : parseInt(this.form.outside),
-          large: isNaN(parseInt(this.form.large)) ? 0 : parseInt(this.form.large),
-        })
-        .then((response) => {
-          // console.log(response.data);
-          if (response.data.type == "SUCCESS") {
-            dialogs.toasts.success(response.data.message);
-          } else {
-            dialogs.toasts.error(response.data.message);
-          }
-        })
-        .catch((err) => {
-          dialogs.toasts.error(err);
-        })
-        .finally(() => {
-          
-        });
+      fApi.submitHolidayVol(
+           this.form.name,
+          this.form.date,
+          this.form.time,
+          this.form.stuSelected,
+          "自提交义工：" + this.form.description,
+          isNaN(parseInt(this.form.inside)) ? 0 : parseInt(this.form.inside),
+          isNaN(parseInt(this.form.outside)) ? 0 : parseInt(this.form.outside),
+          isNaN(parseInt(this.form.large)) ? 0 : parseInt(this.form.large),
+
+      )
     }
   },
 };

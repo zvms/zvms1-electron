@@ -75,7 +75,7 @@ import { fApi, checkToken, getIpcRenderer } from "./apis";
 import dialogs from "./utils/dialogs.js";
 import { permissionTypes } from "./utils/permissions.js";
 import storeSaver from "./utils/storeSaver.js";
-
+import { applyNavItems } from "./utils/nav";
 
 export default {
   name: "App",
@@ -87,10 +87,10 @@ export default {
     currentVol: undefined
   }),
 
-  mounted: async function () {
+  async mounted() {
     this.vol = await fApi.fetchAllVolunter();
     this.$store.commit('notices', await fApi.fetchNotices());
-
+    applyNavItems(this.$store);
     setInterval(this.listen, 60000, this);
   },
 
@@ -122,7 +122,7 @@ export default {
     },
 
     async listen(t) {
-      if (!t.$store.state.isLogined) {
+      if (!t.$store.state.info.permission >= permissionTypes.logined) {
         console.log(t.$store.state);
         console.error("!login");
         getIpcRenderer().send('flash');

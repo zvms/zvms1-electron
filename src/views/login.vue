@@ -19,7 +19,6 @@
 
 <script>
 import { fApi, checkToken, getIpcRenderer } from "../apis"
-import dialogs from "../utils/dialogs.js"; //弹出toast提示用
 import { NOTEMPTY } from "../utils/validation.js"; //校验表单完整性
 import { applyNavItems } from "../utils/nav";
 import storeSaver from "../utils/storeSaver.js";
@@ -50,33 +49,27 @@ export default {
     async login() {
       if (this.$refs.form.validate()) {
         let data = await fApi.login(this.form.userid, md5(this.form.password), current_version);
-        if (data.type == "SUCCESS") {
-          getIpcRenderer().send('endflash');
-          dialogs.toasts.success(data.message);
-          //将一切保存到$store
-          this.$store.commit('notices', await fApi.fetchNotices());
-          this.$store.commit("login", true);
-          this.$store.commit("info", {
-            username: data.username,
-            permission: data.permission,
-            class: data.class,
-            classname: data.classname,
-          });
-          //设置token
-          this.$store.commit("token", data.token);
 
-          //更新抽屉导航栏
-          applyNavItems(data.permission, this.$store);
+        getIpcRenderer().send('endflash');
+        
+        //将一切保存到$store
+        this.$store.commit('notices', await fApi.fetchNotices());
+        this.$store.commit("info", {
+          username: data.username,
+          permission: data.permission,
+          class: data.class,
+          classname: data.classname,
+        });
+        //设置token
+        this.$store.commit("token", data.token);
 
-          this.$router.push("/me");
-        } else if (data.type == "ERROR") {
-          dialogs.toasts.error(data.message);
-          this.form.password = undefined;
-        } else {
-          dialogs.toasts.error("未知错误!");
-          this.form.password = undefined;
-        }
+        console.log("---",this.$store.info)
+        //更新抽屉导航栏
+        applyNavItems(this.$store);
 
+        this.form.password = undefined;
+
+        this.$router.push("/me");
       }
     },
   },

@@ -67,7 +67,7 @@ export function getNavItems(permission) {
             title: "登出",
             to: "/logout",
             icon: "mdi-exit-to-app",
-        },
+        }
     };
 
     let items = [];
@@ -99,10 +99,13 @@ export function getNavItems(permission) {
     }
     items.push(navItems.report);
     items.push(navItems.about);
-    items.push(navItems.logout);
+    if (permission >= permissionTypes.logined) {
+        items.push(navItems.logout);
+    }
     return items;
 }
 
-export function applyNavItems(permission, store) {
-    return store.commit("draweritems", getNavItems(permission));
+export function applyNavItems(store) {
+    console.log(store.info);
+    return store.commit("draweritems", getNavItems(store?.info?.permission || permissionTypes.none));
 }

@@ -202,6 +202,27 @@ export class ForegroundApi {
         })
         return res.data;
     }
+
+    async submitHolidayVol(name,
+        date,
+        time,
+        stuId,
+        description,
+        inside,
+        outside,
+        large) {
+        let res = await this.post("/volunteer/holiday", {
+            name,
+            date,
+            time,
+            stuId,
+            description,
+            inside,
+            outside,
+            large
+        })
+        return res;
+    }
 }
 
 export const fApi = new ForegroundApi(

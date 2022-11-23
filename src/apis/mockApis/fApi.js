@@ -201,6 +201,13 @@ export class ForegroundApi {
             "message": "创建成功"
         };
     }
+
+    async submitHolidayVol() {
+        return {
+            "type": "SUCCESS",
+            "message": "创建成功"
+        };
+    }
 }
 
 export const fApi = new ForegroundApi(

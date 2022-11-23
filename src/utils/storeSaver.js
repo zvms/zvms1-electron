@@ -31,7 +31,6 @@ export default {
         //     }
         //     con.$store.commit("token", JSON.parse(arg.data).token);
         //     con.$store.commit("info", JSON.parse(arg.data).info);
-        //     con.$store.commit("login", JSON.parse(arg.data).isLogined);
         //     applyNavItems()
         //     con.$store.commit("lastSeenVol", JSON.parse(arg.data).lastSeenVol);
         //     f(con);

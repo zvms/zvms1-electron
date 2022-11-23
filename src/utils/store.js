@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 import { getNavItems } from './nav';
 import { permissionTypes } from './permissions';
+import {devConfig} from "../dev"
 
 Vue.use(Vuex);
 
@@ -10,7 +11,6 @@ export default new Vuex.Store({
     //用于保存状态的store
     state: {
         notices: undefined,
-        isLogined: false,
         loadingNum: 0,
         token: undefined,
         info: {
@@ -37,9 +37,6 @@ export default new Vuex.Store({
         info: (state, payload) => {
             state.info = payload
         },
-        login: (state, payload) => {
-            state.isLogined = payload
-        },
         draweritems: (state, payload) => {
             state.draweritems = payload
         },
@@ -60,5 +57,10 @@ export default new Vuex.Store({
         }
     },
 
-    plugins: [createPersistedState()]
+    plugins: devConfig.persistStore? [createPersistedState({
+        paths:[
+            "token",
+            "info"
+        ]
+    })]:undefined
 });
