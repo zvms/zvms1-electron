@@ -82,8 +82,7 @@ export function getNavItems(permission) {
     if (permission >= permissionTypes.teacher) {
         items.push(navItems.notice);
     }
-    if (permission >= permissionTypes.teacher
-        && permission != permissionTypes.admin) {
+    if (permission >= permissionTypes.teacher) {
         items.push(navItems.createVol);
     }
     if (permission > permissionTypes.teacher) {
