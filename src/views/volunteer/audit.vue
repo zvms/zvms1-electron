@@ -71,7 +71,7 @@
               <td>图片</td>
               <td>
                 <ul v-for="img in pictures" :key="img.id">
-                  <li><img :src="'data:image/png;base64,' + img.src" class="pic"></li>
+                  <li><img :src="img.src" class="pic"></li>
                 </ul>
               </td>
             </tr>
@@ -182,7 +182,7 @@ export default {
       await zutils.checkToken(this);
       this.$store.commit("loading", true);
       await axios
-        .get("/volunteer/unaudited",{
+        .get("/volunteer/unaudited/list",{
 
         })
         .then((response) => {
@@ -209,36 +209,52 @@ export default {
       this.dialog1 = true;
       this.volid = item.volId;
       this.stuid = item.stuId;
-      this.thought = item.thought;
-      this.pictures = item.picture;
-
+      axios.get("/volunteer/unaudited/" + this.stuid + "/" + this.volid)
+      .then((response) => {
+        if (response.data.type == "SUCCESS") {
+          console.log("unaudited")
+          dialogs.toasts.success(response.data.message);
+          this.thought = response.data.result.thought;
+          this.pictures = response.data.result.picture.map(function (picture) {
+            return {
+              id: picture.id,
+              src: axios.defaults.baseURL + "/static/pics/" + picture.src + ".jpg"
+            };
+          });
+          axios.get("/volunteer/fetch/"+this.volid)
+            .then((response) => {
+              if (response.data.type == "SUCCESS") {
+                dialogs.toasts.success(response.data.message);
+                this.volDate = response.data.date;
+                this.volTime = response.data.time;
+                this.volDesc = response.data.description;
+                this.volTI = response.data.inside;
+                this.volTO = response.data.outside;
+                this.volTL = response.data.large;
+              } else {
+                dialogs.toasts.error(response.data.message);
+              }
+            })
+            .catch((err) => {
+              dialogs.toasts.error(err);
+            })
+            .finally(() => {
+              this.$store.commit("loading", false);
+            });
+        }
+        else {
+          dialogs.toasts.error(response.data.message);
+        }
+      })
+      .catch((err) => {
+        dialogs.toasts.error(err);
+      })
+      .finally(() => {
+        this.$store.commit("loading", false);
+      })
       console.log(this.pictures)
       
       this.$store.commit("loading", true);
-      axios
-        .get("/volunteer/fetch/"+this.volid,{
-      
-        })
-        .then((response) => {
-          console.log(response.data);
-          if (response.data.type == "SUCCESS") {
-            dialogs.toasts.success(response.data.message);
-            this.volDate = response.data.date;
-            this.volTime = response.data.time;
-            this.volDesc = response.data.description;
-            this.volTI = response.data.inside;
-            this.volTO = response.data.outside;
-            this.volTL = response.data.large;
-          } else {
-            dialogs.toasts.error(response.data.message);
-          }
-        })
-        .catch((err) => {
-          dialogs.toasts.error(err);
-        })
-        .finally(() => {
-          this.$store.commit("loading", false);
-        });
       this.$store.commit("loading", false);
     },
     audit: function (status) {
