@@ -18,7 +18,13 @@ module.exports = {
             "target": "nsis",
             "arch": ["ia32", "x64"]
           }]
-        }
+        },
+        "extraResources": [
+          {
+            from: "./server.json",
+            to: "../"
+          }
+        ]
       },
     }
   }

@@ -7,9 +7,20 @@ import axios from 'axios'
 import NProgress from 'nprogress'
 import './plugins/nprogress.css'
 
+let { ipcRenderer } = window.require("electron");
+
 Vue.config.productionTip = false;
 
-axios.defaults.baseURL = "http://172.31.2.3:5000";
+ipcRenderer.once("file-read-complete", (event, args) => {
+	axios.defaults.baseURL = "http://127.0.0.1:5000";
+	if (args.err) {
+		console.error(args.err);
+	}
+	axios.defaults.baseURL = JSON.parse(args.data).url;
+});
+ipcRenderer.send("file-read-req", "server.json");
+
+// axios.defaults.baseURL = "http://172.31.2.3:5000";
 // axios.defaults.baseURL = "http://localhost:5000";
 
 //axios携带cookie

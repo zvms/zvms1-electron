@@ -209,7 +209,7 @@ export default {
       this.dialog1 = true;
       this.volid = item.volId;
       this.stuid = item.stuId;
-      axios.get("/volunteer/unaudited/" + this.stuid + "/" + this.volid)
+      axios.get(`/volunteer/unaudited/${this.stuid}/${this.volid}`)
       .then((response) => {
         if (response.data.type == "SUCCESS") {
           console.log("unaudited")
@@ -218,7 +218,7 @@ export default {
           this.pictures = response.data.result.picture.map(function (picture) {
             return {
               id: picture.id,
-              src: axios.defaults.baseURL + "/static/pics/" + picture.src + ".jpg"
+              src: `${axios.defaults.baseURL}/static/pics/${picture.src}.jpg`,
             };
           });
           axios.get("/volunteer/fetch/"+this.volid)

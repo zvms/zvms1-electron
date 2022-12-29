@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "zvms"
-#define MyAppVersion "1.3.2"
+#define MyAppVersion "1.3.3"
 #define MyAppPublisher "ZVMS"
 #define MyAppURL "https://gitee.com/zvms"
 #define MyAppExeName "zvms_launcher.exe"
