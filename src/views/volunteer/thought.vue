@@ -45,7 +45,7 @@
             </tr>
             <tr>
               <td>义工详细信息</td>
-              <td>{{volDesc}}</td>
+              <td v-html="volDesc"></td>
             </tr>
             <tr>
               <td>校内时长</td>

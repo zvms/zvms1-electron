@@ -55,7 +55,7 @@ import storeSaver from "../utils/storeSaver.js";
 let { ipcRenderer } = window.require('electron')
 
 var md5=require('md5-node');
-var current_version = "51141167bd8394d8da590fddaeb3d91e";
+var current_version = "adbd4f3409bb2458e4bb0c80e2a25d3c";
 // 版本号的加盐的MD5，记得改
 
 export default {
@@ -109,7 +109,8 @@ export default {
               //更新抽屉导航栏
               this.drawers = [
                 { title: "我的", to: "/me", icon: "mdi-account-circle" },
-                { title: "修改密码", to: "/modifyPwd", icon: "mdi-lock"}
+                { title: "修改密码", to: "/modifyPwd", icon: "mdi-lock"},
+                { title: "激活账户", to: "/activateAccount", icon: "mdi-plus"}
               ];
               //看看是否加上班级列表
               if (response.data.permission >= permissions.teacher) {

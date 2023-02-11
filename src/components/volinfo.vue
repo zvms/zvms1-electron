@@ -7,7 +7,7 @@
       <tbody>
         <tr>
           <td>简介</td>
-          <td>{{ vol.description }}</td>
+          <td v-html="vol.description"></td>
         </tr>
         <tr>
           <td>日期</td>

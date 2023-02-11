@@ -8,8 +8,7 @@
     </v-card>
     <v-card v-for="vol in volworks" v-bind:key="vol.id">
       <v-card-title>{{ vol.name }}</v-card-title>
-      <v-card-text>
-        {{ vol.description }}
+      <v-card-text v-html="vol.description">
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

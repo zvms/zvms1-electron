@@ -45,7 +45,7 @@
             </tr>
             <tr>
               <td>义工详细信息</td>
-              <td>{{volDesc}}</td>
+              <td v-html="volDesc"></td>
             </tr>
             <tr>
               <td>校内时长</td>
@@ -65,7 +65,7 @@
             </tr>
             <tr>
               <td>感想</td>
-              <td>{{thought}}</td>
+              <td v-html="thought"></td>
             </tr>
             <tr v-if="pictures">
               <td>图片</td>
@@ -240,6 +240,9 @@ export default {
             })
             .finally(() => {
               this.$store.commit("loading", false);
+              this.inside = undefined;
+              this.outside = undefined;
+              this.largest = undefined;
             });
         }
         else {
