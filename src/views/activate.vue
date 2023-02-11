@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-card>
-            <v-card-title>反馈错误</v-card-title>
+            <v-card-title>激活账户</v-card-title>
             <v-card-text>
                 <v-text-field
                     v-model="stuId"
